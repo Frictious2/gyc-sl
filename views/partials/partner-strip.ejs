@@ -1,0 +1,15 @@
+<div class="row g-3">
+  <% partners.forEach((partner) => { %>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="partner-card h-100">
+        <% if (partner.logo_path) { %>
+          <img src="<%= partner.logo_path %>" alt="<%= partner.logo_alt || partner.name %>" class="partner-logo mb-3" />
+        <% } else { %>
+          <div class="placeholder-image rounded-4 partner-logo mb-3">Logo</div>
+        <% } %>
+        <h3 class="h6 mb-1"><%= partner.name %></h3>
+        <% if (partner.partner_type) { %><p class="small text-muted mb-0"><%= partner.partner_type %></p><% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>

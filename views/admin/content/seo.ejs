@@ -1,0 +1,24 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <h2 class="h5">Seeded SEO entries</h2>
+    <p class="text-muted">Meta title, description, keywords, and future open graph fields are managed centrally from this module.</p>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Meta Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Object.entries(seoEntries).filter(([route]) => route !== 'default').forEach(([route, entry]) => { %>
+            <tr>
+              <td><code><%= route %></code></td>
+              <td><%= entry.title %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

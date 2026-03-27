@@ -1,0 +1,33 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: 'News & Events',
+  title: 'Latest updates from GYC Sierra Leone',
+  summary: 'Stay informed about activities, events, press releases, and impact stories.',
+  breadcrumbItems: [{ label: 'News & Events' }]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <% posts.forEach((post) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../../partials/news-card', { post }) %>
+        </div>
+      <% }) %>
+    </div>
+    <div class="newsletter-panel mt-5">
+      <div class="row align-items-center g-3">
+        <div class="col-lg-7">
+          <span class="eyebrow">Newsletter</span>
+          <h2 class="h3 fw-bold mt-3">Monthly updates on youth leadership and sustainable development</h2>
+          <p class="mb-0">We respect your privacy. Unsubscribe anytime.</p>
+        </div>
+        <div class="col-lg-5">
+          <form action="/newsletter-subscribe" method="post" class="row g-2">
+            <div class="col-sm-8"><input class="form-control" type="email" name="email" placeholder="Email address" /></div>
+            <div class="col-sm-4"><button class="btn btn-sdg w-100" type="submit">Subscribe</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

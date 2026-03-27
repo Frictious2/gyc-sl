@@ -1,0 +1,15 @@
+<article class="sdg-card h-100">
+  <% if (project.featured_image_path) { %>
+    <img src="<%= project.featured_image_path %>" alt="<%= project.featured_image_alt || project.title %>" class="card-media mb-3" />
+  <% } else { %>
+    <div class="placeholder-image rounded-4 card-media mb-3">Project image placeholder</div>
+  <% } %>
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <span class="badge sdg-badge"><%= project.project_status || project.status || 'Current' %></span>
+    <% if (project.theme) { %><span class="badge badge-soft"><%= project.theme %></span><% } %>
+    <% if (project.location) { %><span class="badge badge-soft"><%= project.location %></span><% } %>
+  </div>
+  <h3 class="h5"><%= project.title %></h3>
+  <p><%= project.summary %></p>
+  <a href="/projects/<%= project.slug %>" class="text-decoration-none">View details</a>
+</article>

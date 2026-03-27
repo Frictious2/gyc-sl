@@ -1,0 +1,12 @@
+<article class="team-card h-100">
+  <% if (person.photo_path) { %>
+    <img src="<%= person.photo_path %>" alt="<%= person.photo_alt || person.full_name %>" class="team-photo mb-3" />
+  <% } else { %>
+    <div class="placeholder-image rounded-4 team-photo mb-3">Photo placeholder</div>
+  <% } %>
+  <h3 class="h5 mb-1"><%= person.full_name %></h3>
+  <p class="text-muted fw-semibold"><%= person.role_title || person.district_name %></p>
+  <% if (person.bio) { %><p class="mb-3"><%= person.bio %></p><% } %>
+  <% if (person.email) { %><p class="small mb-1"><i class="bi bi-envelope"></i> <%= person.email %></p><% } %>
+  <% if (person.linkedin_url) { %><p class="small mb-0"><i class="bi bi-linkedin"></i> <%= person.linkedin_url %></p><% } %>
+</article>

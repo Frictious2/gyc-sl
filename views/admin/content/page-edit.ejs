@@ -1,0 +1,134 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="h5 mb-1">Page settings</h2>
+        <p class="text-muted mb-0"><code><%= page.route_path %></code></p>
+      </div>
+      <a href="/admin/pages" class="btn btn-outline-secondary btn-sm">Back to pages</a>
+    </div>
+
+    <form action="/admin/pages/<%= page.id %>" method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Page title</label>
+        <input class="form-control" name="title" value="<%= page.title %>" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Hero image</label>
+        <select class="form-select" name="hero_image_id">
+          <option value="">No image selected</option>
+          <% mediaItems.forEach((media) => { %>
+            <option value="<%= media.id %>" <%= String(page.hero_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Hero title</label>
+        <input class="form-control" name="hero_title" value="<%= page.hero_title || '' %>" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Hero subtitle</label>
+        <textarea class="form-control" name="hero_subtitle" rows="3"><%= page.hero_subtitle || '' %></textarea>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          <option value="published" <%= page.status === 'published' ? 'selected' : '' %>>Published</option>
+          <option value="draft" <%= page.status === 'draft' ? 'selected' : '' %>>Draft</option>
+          <option value="archived" <%= page.status === 'archived' ? 'selected' : '' %>>Archived</option>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="is_published" id="pagePublished" <%= page.is_published ? 'checked' : '' %> />
+          <label class="form-check-label" for="pagePublished">Publish page</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-sdg" type="submit">Save page</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row g-4">
+  <% page.sections.forEach((section) => { %>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h3 class="h6 mb-1"><%= section.section_key %></h3>
+              <p class="text-muted mb-0">Edit text, buttons, media, sort order, and publish state.</p>
+            </div>
+            <span class="badge text-bg-light"><%= section.layout_style || 'default' %></span>
+          </div>
+
+          <form action="/admin/sections/<%= section.id %>" method="post" class="row g-3">
+            <input type="hidden" name="page_id" value="<%= page.id %>" />
+            <div class="col-md-6">
+              <label class="form-label">Title</label>
+              <input class="form-control" name="title" value="<%= section.title || '' %>" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Subtitle</label>
+              <input class="form-control" name="subtitle" value="<%= section.subtitle || '' %>" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Body text</label>
+              <textarea class="form-control" name="body" rows="4"><%= section.body || '' %></textarea>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Primary button label</label>
+              <input class="form-control" name="cta_label" value="<%= section.cta_label || '' %>" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Primary button link</label>
+              <input class="form-control" name="cta_link" value="<%= section.cta_link || '' %>" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Secondary button label</label>
+              <input class="form-control" name="secondary_cta_label" value="<%= section.secondary_cta_label || '' %>" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Secondary button link</label>
+              <input class="form-control" name="secondary_cta_link" value="<%= section.secondary_cta_link || '' %>" />
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Section image</label>
+              <select class="form-select" name="image_id">
+                <option value="">No image selected</option>
+                <% mediaItems.forEach((media) => { %>
+                  <option value="<%= media.id %>" <%= String(section.image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Sort order</label>
+              <input class="form-control" name="sort_order" type="number" value="<%= section.sort_order || 0 %>" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                <option value="published" <%= section.status === 'published' ? 'selected' : '' %>>Published</option>
+                <option value="draft" <%= section.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                <option value="archived" <%= section.status === 'archived' ? 'selected' : '' %>>Archived</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_published" id="published-<%= section.id %>" <%= section.is_published ? 'checked' : '' %> />
+                <label class="form-check-label" for="published-<%= section.id %>">Publish</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-sdg" type="submit">Save section</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>

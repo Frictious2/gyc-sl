@@ -1,0 +1,12 @@
+<article class="sdg-card h-100">
+  <span class="badge sdg-badge"><%= resource.category %></span>
+  <h3 class="h5 mt-3"><%= resource.title %></h3>
+  <p><%= resource.summary %></p>
+  <% if (resource.external_url) { %>
+    <a href="<%= resource.external_url %>" target="_blank" rel="noreferrer" class="text-decoration-none">Visit resource</a>
+  <% } else if (resource.file_path_resolved) { %>
+    <a href="<%= resource.file_path_resolved %>" class="text-decoration-none">Open file</a>
+  <% } else { %>
+    <span class="text-muted">File pending upload</span>
+  <% } %>
+</article>

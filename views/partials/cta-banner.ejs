@@ -1,0 +1,20 @@
+<section class="cta-banner py-5">
+  <div class="container">
+    <div class="cta-panel">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <span class="eyebrow">Take Action</span>
+          <h2 class="display-6 fw-bold mt-3"><%= cta.title %></h2>
+          <p class="lead mb-0"><%= cta.body %></p>
+        </div>
+        <div class="col-lg-4">
+          <div class="d-grid gap-2">
+            <% cta.buttons.forEach((button, index) => { %>
+              <a href="<%= button.href %>" class="btn <%= index === 0 ? 'btn-sdg' : 'btn-outline-sdg' %>"><%= button.label %></a>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

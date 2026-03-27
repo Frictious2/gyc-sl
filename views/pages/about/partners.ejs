@@ -1,0 +1,31 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Partners & Networks',
+  title: page?.hero_title || 'Partners & Networks',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [
+    { label: 'About', href: '/about' },
+    { label: 'Partners' }
+  ]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-heading mb-4">
+      <span class="eyebrow">Our Partners</span>
+      <h2 class="display-6 fw-bold mt-3">Cross-sector collaboration for sustainable development</h2>
+    </div>
+    <%- include('../../partials/partner-strip', { partners }) %>
+  </div>
+</section>
+
+<%- include('../../partials/cta-banner', {
+  cta: {
+    title: 'Become a Partner',
+    body: 'We welcome new partnerships that align with our mission and expand youth-led impact in Sierra Leone.',
+    buttons: [
+      { label: 'Partner With Us', href: '/get-involved/partner' }
+    ]
+  }
+}) %>

@@ -1,0 +1,30 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <h2 class="h5">Editable pages and sections</h2>
+    <p class="text-muted">This module is the Phase 1 entry point for editing page text, buttons, section structure, imagery, and publish state.</p>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Route</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pages.forEach((page) => { %>
+            <tr>
+              <td><%= page.id %></td>
+              <td><%= page.title %></td>
+              <td><code><%= page.route_path %></code></td>
+              <td><%= page.is_published ? 'Published' : 'Draft' %></td>
+              <td><a href="/admin/pages/<%= page.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit page</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

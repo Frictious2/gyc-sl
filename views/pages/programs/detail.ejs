@@ -1,0 +1,69 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: 'Program Area',
+  title: content.program.title,
+  summary: content.program.short_description || content.program.approach_text,
+  image: content.program.hero_image_path,
+  imageAlt: content.program.hero_image_alt,
+  breadcrumbItems: [
+    { label: 'Programs', href: '/programs' },
+    { label: content.program.title }
+  ]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="sdg-card h-100">
+          <h2 class="h4">The Challenge</h2>
+          <p class="mb-0"><%= content.program.challenge_text %></p>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Our Approach</h2>
+          <p class="mb-0"><%= content.program.approach_text %></p>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Key Activities</h2>
+          <ul class="content-list mb-0">
+            <% content.keyActivities.forEach((item) => { %><li><%= item %></li><% }) %>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Impact Highlights</h2>
+          <ul class="content-list mb-0">
+            <% content.impactHighlights.forEach((item) => { %><li><%= item %></li><% }) %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-soft">
+  <div class="container">
+    <div class="row g-4 align-items-stretch">
+      <div class="col-lg-6">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Featured Project</h2>
+          <% if (content.relatedProject) { %>
+            <%- include('../../partials/project-card', { project: content.relatedProject }) %>
+          <% } else { %>
+            <p class="mb-0">Featured project content is ready to be linked from the CMS.</p>
+          <% } %>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Related Visuals</h2>
+          <div class="placeholder-image rounded-4">Program gallery placeholder</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

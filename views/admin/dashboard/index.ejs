@@ -1,0 +1,39 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="row g-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="admin-stat-card">
+      <span>Programs</span>
+      <strong><%= summary.programs %></strong>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="admin-stat-card">
+      <span>Projects</span>
+      <strong><%= summary.projects %></strong>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="admin-stat-card">
+      <span>News Posts</span>
+      <strong><%= summary.newsPosts %></strong>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="admin-stat-card">
+      <span>Contact Messages</span>
+      <strong><%= summary.contactMessages %></strong>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+  <div class="card-body">
+    <h2 class="h5">Quick Actions</h2>
+    <div class="d-flex flex-wrap gap-3">
+      <a href="/admin/pages" class="btn btn-sdg">Manage pages</a>
+      <a href="/admin/contact-block" class="btn btn-outline-secondary">Edit contact block</a>
+      <a href="/admin/seo" class="btn btn-outline-secondary">Manage SEO</a>
+    </div>
+  </div>
+</div>

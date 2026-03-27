@@ -1,0 +1,111 @@
+<%- include('../partials/page-hero', {
+  eyebrow: 'SDG-Inspired Youth Leadership',
+  title: homeContent.page.hero_title,
+  summary: homeContent.page.hero_subtitle,
+  image: homeContent.page.hero_image_path,
+  imageAlt: homeContent.page.hero_image_alt,
+  buttons: [
+    { label: homeContent.page.sections[0]?.cta_label || 'Join the Movement', href: homeContent.page.sections[0]?.cta_link || '/get-involved' },
+    { label: homeContent.page.sections[0]?.secondary_cta_label || 'Learn More', href: homeContent.page.sections[0]?.secondary_cta_link || '/about' },
+    { label: 'Donate Now', href: '/donate' }
+  ]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-heading mb-4">
+      <span class="eyebrow">Impact</span>
+      <h2 class="display-6 fw-bold mt-3">Youth-driven results across Sierra Leone</h2>
+    </div>
+    <div class="row g-4">
+      <% homeContent.stats.forEach((stat) => { %>
+        <div class="col-sm-6 col-xl">
+          <%- include('../partials/stat-counter', { stat }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-soft">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5">
+        <span class="eyebrow">Who We Are</span>
+        <h2 class="display-6 fw-bold mt-3"><%= homeContent.aboutSection?.title || 'A youth-led movement for sustainable development' %></h2>
+        <p class="lead"><%= homeContent.aboutSection?.body %></p>
+        <a href="/about" class="btn btn-sdg">Discover Our Story</a>
+      </div>
+      <div class="col-lg-7">
+        <div class="story-panel">
+          <div class="placeholder-image rounded-4">About preview visual</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow">What We Do</span>
+        <h2 class="display-6 fw-bold mt-3">Five thematic pillars for lasting impact</h2>
+      </div>
+      <a href="/programs" class="btn btn-outline-sdg">Explore Our Programs</a>
+    </div>
+    <div class="row g-4">
+      <% homeContent.programs.forEach((program) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../partials/program-card', { program, accentClass: (program.slug || '').replace(/[^a-z]/g, '') }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-soft">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <span class="eyebrow">Featured Project</span>
+        <h2 class="display-6 fw-bold mt-3">From ideas to community impact</h2>
+        <% if (homeContent.featuredProject) { %>
+          <%- include('../partials/project-card', { project: homeContent.featuredProject }) %>
+        <% } %>
+      </div>
+      <div class="col-lg-6">
+        <span class="eyebrow">Latest Update</span>
+        <h2 class="display-6 fw-bold mt-3">Stories and events shaping the movement</h2>
+        <% if (homeContent.featuredNews) { %>
+          <%- include('../partials/news-card', { post: homeContent.featuredNews }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow">Partners & Supporters</span>
+        <h2 class="display-6 fw-bold mt-3">Collaboration that scales youth impact</h2>
+      </div>
+      <a href="/about/partners" class="btn btn-outline-sdg">View Partners</a>
+    </div>
+    <%- include('../partials/partner-strip', { partners: homeContent.partners }) %>
+  </div>
+</section>
+
+<%- include('../partials/cta-banner', {
+  cta: {
+    title: homeContent.finalCta?.title || 'Ready to Make a Difference?',
+    body: homeContent.finalCta?.body || 'Join thousands of young Sierra Leoneans who are taking action for a sustainable future.',
+    buttons: [
+      { label: homeContent.finalCta?.cta_label || 'Volunteer', href: homeContent.finalCta?.cta_link || '/get-involved/volunteer' },
+      { label: homeContent.finalCta?.secondary_cta_label || 'Partner', href: homeContent.finalCta?.secondary_cta_link || '/get-involved/partner' },
+      { label: 'Donate', href: '/donate' }
+    ]
+  }
+}) %>

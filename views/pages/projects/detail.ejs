@@ -1,0 +1,35 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: project.theme || 'Project',
+  title: project.title,
+  summary: project.summary,
+  image: project.featured_image_path,
+  imageAlt: project.featured_image_alt,
+  breadcrumbItems: [
+    { label: 'Projects', href: '/projects' },
+    { label: project.title }
+  ]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Project Overview</h2>
+          <p class="mb-0"><%= project.body %></p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Project Details</h2>
+          <ul class="list-unstyled mb-0 detail-list">
+            <li><strong>Status:</strong> <%= project.project_status || project.status %></li>
+            <li><strong>Theme:</strong> <%= project.theme || 'To be updated' %></li>
+            <li><strong>Location:</strong> <%= project.location || 'To be updated' %></li>
+            <li><strong>Partners:</strong> <%= project.partners_text || 'To be updated' %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

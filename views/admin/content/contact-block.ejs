@@ -1,0 +1,18 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <h2 class="h5">Primary Contact & Map Block</h2>
+    <p class="text-muted">This is the single editable source for address, phone numbers, emails, office hours, social links, and the map embed.</p>
+    <form action="/admin/contact-block" method="post" class="row g-3">
+      <% ['contact_intro', 'contact_address', 'contact_phone', 'contact_email', 'contact_socials', 'contact_hours', 'contact_map_embed'].forEach((key) => { %>
+        <% const existing = settings.find((item) => item.setting_key === key); %>
+        <div class="col-12">
+          <label class="form-label text-capitalize"><%= key.replace(/_/g, ' ') %></label>
+          <textarea class="form-control" name="<%= key %>" rows="<%= key === 'contact_map_embed' ? 4 : 3 %>"><%= (existing && existing.setting_value) || fallback[key] || '' %></textarea>
+        </div>
+      <% }) %>
+      <div class="col-12">
+        <button class="btn btn-sdg" type="submit">Save contact block</button>
+      </div>
+    </form>
+  </div>
+</div>

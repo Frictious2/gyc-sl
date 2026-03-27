@@ -1,0 +1,19 @@
+<section class="min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="login-card card border-0 shadow-lg p-4">
+    <h1 class="h3 mb-3">Admin Login</h1>
+    <%- include('../../partials/flash-messages') %>
+    <form action="/admin/login" method="post" class="row g-3">
+      <div class="col-12">
+        <label class="form-label">Email</label>
+        <input class="form-control" name="email" type="email" required />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Password</label>
+        <input class="form-control" name="password" type="password" required />
+      </div>
+      <div class="col-12">
+        <button class="btn btn-sdg w-100" type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+</section>

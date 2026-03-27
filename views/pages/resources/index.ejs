@@ -1,0 +1,28 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Resources',
+  title: page?.hero_title || 'Knowledge Hub',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [{ label: 'Resources' }]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <% Object.entries(groupedResources).forEach(([category, resources]) => { %>
+      <div class="mb-5">
+        <div class="section-heading mb-4">
+          <span class="eyebrow"><%= category.replace(/-/g, ' ') %></span>
+          <h2 class="h2 fw-bold mt-3 text-capitalize"><%= category.replace(/-/g, ' ') %></h2>
+        </div>
+        <div class="row g-4">
+          <% resources.forEach((resource) => { %>
+            <div class="col-md-6 col-xl-3">
+              <%- include('../../partials/resource-card', { resource }) %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</section>

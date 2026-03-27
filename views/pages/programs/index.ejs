@@ -1,0 +1,20 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Programs',
+  title: page?.hero_title || 'Our Programs',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [{ label: 'Programs' }]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <% programs.forEach((program) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../../partials/program-card', { program, accentClass: (program.slug || '').replace(/[^a-z]/g, '') }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>

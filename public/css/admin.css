@@ -1,0 +1,62 @@
+:root {
+  --admin-sidebar: #163049;
+  --admin-accent: #26bde2;
+  --admin-accent-2: #fd6925;
+  --admin-bg: #f5f8fb;
+}
+
+body.admin-body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--admin-bg);
+}
+
+.admin-sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(229, 36, 59, 0.15), transparent 25%),
+    linear-gradient(180deg, var(--admin-sidebar), #214b6d);
+}
+
+.admin-brand {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.admin-topbar {
+  min-height: 76px;
+}
+
+.admin-stat-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 15px 40px rgba(22, 48, 73, 0.08);
+  border-top: 4px solid var(--admin-accent);
+}
+
+.admin-stat-card strong {
+  display: block;
+  font-size: 2rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.login-card {
+  width: min(100%, 420px);
+}
+
+.btn-sdg {
+  background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-2));
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  font-weight: 700;
+}
+
+.media-thumb {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: linear-gradient(135deg, rgba(38, 189, 226, 0.12), rgba(253, 105, 37, 0.12));
+}

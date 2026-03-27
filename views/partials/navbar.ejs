@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand-lg navbar-light sticky-top bg-white border-bottom navbar-shell">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+      <span class="brand-mark"></span>
+      <span>GYC Sierra Leone</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/about') ? 'active' : '' %>" href="/about">About</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/programs') ? 'active' : '' %>" href="/programs">Programs</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/projects') ? 'active' : '' %>" href="/projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/news') ? 'active' : '' %>" href="/news">News</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/resources') ? 'active' : '' %>" href="/resources">Resources</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/gallery') ? 'active' : '' %>" href="/gallery">Gallery</a></li>
+        <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/contact') ? 'active' : '' %>" href="/contact">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2 ms-lg-3">
+        <a class="btn btn-outline-sdg btn-sm rounded-pill" href="/get-involved">Get Involved</a>
+        <a class="btn btn-sdg btn-sm rounded-pill" href="/donate">Donate</a>
+      </div>
+    </div>
+  </div>
+</nav>

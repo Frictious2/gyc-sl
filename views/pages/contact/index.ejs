@@ -1,0 +1,33 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Contact',
+  title: page?.hero_title || 'Get in Touch',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [{ label: 'Contact' }]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <div class="sdg-card h-100">
+          <h2 class="h4">Contact Form</h2>
+          <%- include('../../partials/flash-messages') %>
+          <form action="/contact" method="post" class="row g-3">
+            <div class="col-12"><input class="form-control" name="full_name" placeholder="Full Name *" required /></div>
+            <div class="col-md-6"><input class="form-control" name="email" type="email" placeholder="Email Address *" required /></div>
+            <div class="col-md-6"><input class="form-control" name="phone" placeholder="Phone Number" /></div>
+            <div class="col-12"><input class="form-control" name="organization" placeholder="Organization (optional)" /></div>
+            <div class="col-12"><input class="form-control" name="subject" placeholder="Subject *" required /></div>
+            <div class="col-12"><textarea class="form-control" rows="6" name="message" placeholder="Message *" required></textarea></div>
+            <div class="col-12"><button class="btn btn-sdg" type="submit">Send Message</button></div>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <%- include('../../partials/contact-block', { contactSettings }) %>
+      </div>
+    </div>
+  </div>
+</section>

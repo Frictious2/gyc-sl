@@ -1,0 +1,31 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Gallery',
+  title: page?.hero_title || 'Our Work in Pictures',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [{ label: 'Gallery' }]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="/gallery" class="btn <%= !activeCategory ? 'btn-sdg' : 'btn-outline-sdg' %> btn-sm">All</a>
+      <% categories.forEach((category) => { %>
+        <a href="/gallery?category=<%= encodeURIComponent(category.toLowerCase()) %>" class="btn <%= activeCategory === category.toLowerCase() ? 'btn-sdg' : 'btn-outline-sdg' %> btn-sm"><%= category %></a>
+      <% }) %>
+    </div>
+    <div class="row g-4">
+      <% galleryItems.forEach((item) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../../partials/gallery-card', { item }) %>
+        </div>
+      <% }) %>
+      <% if (!galleryItems.length) { %>
+        <div class="col-12">
+          <div class="alert alert-light border">No gallery items match the selected category yet.</div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,59 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: page?.title || 'Our Team',
+  title: page?.hero_title || 'Meet the People Behind GYC',
+  summary: page?.hero_subtitle || '',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
+  breadcrumbItems: [
+    { label: 'About', href: '/about' },
+    { label: 'Team' }
+  ]
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-heading mb-4">
+      <span class="eyebrow">Leadership Team</span>
+      <h2 class="display-6 fw-bold mt-3">Youth energy with professional expertise</h2>
+    </div>
+    <div class="row g-4">
+      <% teamBundle.team.forEach((person) => { %>
+        <div class="col-md-6 col-xl-3">
+          <%- include('../../partials/team-card', { person }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-soft">
+  <div class="container">
+    <div class="section-heading mb-4">
+      <span class="eyebrow">Board of Directors</span>
+      <h2 class="display-6 fw-bold mt-3">Strategic oversight and governance</h2>
+    </div>
+    <div class="row g-4">
+      <% teamBundle.board.forEach((person) => { %>
+        <div class="col-md-6 col-xl-3">
+          <%- include('../../partials/team-card', { person }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-heading mb-4">
+      <span class="eyebrow">District Coordinators</span>
+      <h2 class="display-6 fw-bold mt-3">Grassroots reach through a volunteer network</h2>
+    </div>
+    <div class="row g-4">
+      <% teamBundle.districts.forEach((person) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../../partials/team-card', { person }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>

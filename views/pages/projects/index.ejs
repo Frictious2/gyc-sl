@@ -1,0 +1,46 @@
+<%- include('../../partials/page-hero', {
+  eyebrow: 'Projects',
+  title: 'Youth-led initiatives across Sierra Leone',
+  summary: 'Explore current and completed projects making a difference in communities across the country.',
+  breadcrumbItems: [{ label: 'Projects' }]
+}) %>
+
+<section class="py-4">
+  <div class="container">
+    <form class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          <option value="">All statuses</option>
+          <option value="current" <%= filters.status === 'current' ? 'selected' : '' %>>Current</option>
+          <option value="ongoing" <%= filters.status === 'ongoing' ? 'selected' : '' %>>Ongoing</option>
+          <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Theme</label>
+        <input class="form-control" name="theme" value="<%= filters.theme %>" placeholder="Climate, gender, SDGs..." />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Location</label>
+        <input class="form-control" name="location" value="<%= filters.location %>" placeholder="District or national" />
+      </div>
+      <div class="col-12">
+        <button class="btn btn-sdg btn-sm" type="submit">Apply filters</button>
+        <a href="/projects" class="btn btn-outline-sdg btn-sm">Reset</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="py-4 pb-5">
+  <div class="container">
+    <div class="row g-4">
+      <% projects.forEach((project) => { %>
+        <div class="col-md-6 col-xl-4">
+          <%- include('../../partials/project-card', { project }) %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>

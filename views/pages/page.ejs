@@ -1,0 +1,45 @@
+<%
+  const pathParts = page.route_path.split('/').filter(Boolean);
+  const breadcrumbItems = pathParts.map((part, index) => ({
+    label: part.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    href: index === pathParts.length - 1 ? null : `/${pathParts.slice(0, index + 1).join('/')}`
+  }));
+%>
+
+<%- include('../partials/page-hero', {
+  eyebrow: page.title,
+  title: page.hero_title,
+  summary: page.hero_subtitle,
+  image: page.hero_image_path,
+  imageAlt: page.hero_image_alt,
+  breadcrumbItems
+}) %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <% page.sections.forEach((section) => { %>
+        <div class="<%= section.layout_style === 'content' ? 'col-lg-12' : 'col-lg-6' %>">
+          <div class="sdg-card h-100">
+            <% if (section.image_path) { %>
+              <img src="<%= section.image_path %>" alt="<%= section.image_alt || section.title %>" class="card-media mb-3" />
+            <% } else if (section.layout_style === 'feature' || section.layout_style === 'gallery') { %>
+              <div class="placeholder-image rounded-4 card-media mb-3">Section image placeholder</div>
+            <% } %>
+            <h2 class="h4"><%= section.title %></h2>
+            <% if (section.subtitle) { %><p class="section-subtitle"><%= section.subtitle %></p><% } %>
+            <p class="mb-0"><%= section.body %></p>
+            <% if (section.cta_label && section.cta_link) { %>
+              <div class="mt-4 d-flex flex-wrap gap-2">
+                <a href="<%= section.cta_link %>" class="btn btn-sdg btn-sm"><%= section.cta_label %></a>
+                <% if (section.secondary_cta_label && section.secondary_cta_link) { %>
+                  <a href="<%= section.secondary_cta_link %>" class="btn btn-outline-sdg btn-sm"><%= section.secondary_cta_label %></a>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
