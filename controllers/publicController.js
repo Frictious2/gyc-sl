@@ -21,17 +21,19 @@ function metaFromSeo(seo, fallbackTitle) {
 
 exports.home = async (req, res, next) => {
   try {
-    const [homeContent, seo, contactSettings] = await Promise.all([
+    const [homeContent, seo, contactSettings, footerSettings] = await Promise.all([
       contentService.getHomeContent(),
       contentService.getSeo('/'),
-      contentService.getContactSettings()
+      contentService.getContactSettings(),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/index', {
       title: 'Home',
       pageMeta: metaFromSeo(seo, 'Home'),
       homeContent,
-      contactSettings
+      contactSettings,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -40,10 +42,11 @@ exports.home = async (req, res, next) => {
 
 exports.standardPage = async (req, res, next) => {
   try {
-    const [page, seo, contactSettings] = await Promise.all([
+    const [page, seo, contactSettings, footerSettings] = await Promise.all([
       contentService.getPage(req.path),
       contentService.getSeo(req.path),
-      contentService.getContactSettings()
+      contentService.getContactSettings(),
+      contentService.getFooterSettings()
     ]);
 
     if (!page) {
@@ -54,7 +57,8 @@ exports.standardPage = async (req, res, next) => {
       title: page.title,
       pageMeta: metaFromSeo(seo, page.title),
       page,
-      contactSettings
+      contactSettings,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -63,17 +67,19 @@ exports.standardPage = async (req, res, next) => {
 
 exports.teamPage = async (req, res, next) => {
   try {
-    const [page, teamBundle, seo] = await Promise.all([
+    const [page, teamBundle, seo, footerSettings] = await Promise.all([
       contentService.getPage('/about/team'),
       contentService.getTeamBundle(),
-      contentService.getSeo('/about')
+      contentService.getSeo('/about'),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/about/team', {
       title: page?.title || 'Our Team',
       pageMeta: metaFromSeo(seo, page?.title || 'Our Team'),
       page,
-      teamBundle
+      teamBundle,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -82,17 +88,19 @@ exports.teamPage = async (req, res, next) => {
 
 exports.partnersPage = async (req, res, next) => {
   try {
-    const [page, partners, seo] = await Promise.all([
+    const [page, partners, seo, footerSettings] = await Promise.all([
       contentService.getPage('/about/partners'),
       contentService.getPartners(),
-      contentService.getSeo('/about')
+      contentService.getSeo('/about'),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/about/partners', {
       title: page?.title || 'Partners',
       pageMeta: metaFromSeo(seo, page?.title || 'Partners'),
       page,
-      partners
+      partners,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -101,17 +109,19 @@ exports.partnersPage = async (req, res, next) => {
 
 exports.programsOverview = async (req, res, next) => {
   try {
-    const [page, programs, seo] = await Promise.all([
+    const [page, programs, seo, footerSettings] = await Promise.all([
       contentService.getPage('/programs'),
       contentService.getPrograms(),
-      contentService.getSeo('/programs')
+      contentService.getSeo('/programs'),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/programs/index', {
       title: page?.title || 'Programs',
       pageMeta: metaFromSeo(seo, page?.title || 'Programs'),
       page,
-      programs
+      programs,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -129,7 +139,8 @@ exports.programDetail = async (req, res, next) => {
     render(res, 'pages/programs/detail', {
       title: content.program.title,
       pageMeta: metaFromSeo(await contentService.getSeo(`/programs/${req.params.slug}`), content.program.title),
-      content
+      content,
+      footerSettings: await contentService.getFooterSettings()
     });
   } catch (error) {
     next(error);
@@ -138,9 +149,10 @@ exports.programDetail = async (req, res, next) => {
 
 exports.projectsListing = async (req, res, next) => {
   try {
-    const [allProjects, seo] = await Promise.all([
+    const [allProjects, seo, footerSettings] = await Promise.all([
       contentService.getProjects(),
-      contentService.getSeo('/projects')
+      contentService.getSeo('/projects'),
+      contentService.getFooterSettings()
     ]);
 
     const filters = {
@@ -160,7 +172,8 @@ exports.projectsListing = async (req, res, next) => {
       title: 'Projects',
       pageMeta: metaFromSeo(seo, 'Projects'),
       projects,
-      filters
+      filters,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -178,7 +191,8 @@ exports.projectDetail = async (req, res, next) => {
     render(res, 'pages/projects/detail', {
       title: project.title,
       pageMeta: metaFromSeo(await contentService.getSeo('/projects'), project.title),
-      project
+      project,
+      footerSettings: await contentService.getFooterSettings()
     });
   } catch (error) {
     next(error);
@@ -187,15 +201,17 @@ exports.projectDetail = async (req, res, next) => {
 
 exports.newsListing = async (req, res, next) => {
   try {
-    const [posts, seo] = await Promise.all([
+    const [posts, seo, footerSettings] = await Promise.all([
       contentService.getNews(),
-      contentService.getSeo('/news')
+      contentService.getSeo('/news'),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/news/index', {
       title: 'News',
       pageMeta: metaFromSeo(seo, 'News'),
-      posts
+      posts,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -213,7 +229,8 @@ exports.newsDetail = async (req, res, next) => {
     render(res, 'pages/news/detail', {
       title: post.title,
       pageMeta: metaFromSeo(await contentService.getSeo('/news'), post.title),
-      post
+      post,
+      footerSettings: await contentService.getFooterSettings()
     });
   } catch (error) {
     next(error);
@@ -222,9 +239,10 @@ exports.newsDetail = async (req, res, next) => {
 
 exports.resourcesPage = async (req, res, next) => {
   try {
-    const [page, resources] = await Promise.all([
+    const [page, resources, footerSettings] = await Promise.all([
       contentService.getPage('/resources'),
-      contentService.getResources()
+      contentService.getResources(),
+      contentService.getFooterSettings()
     ]);
 
     const groupedResources = resources.reduce((acc, resource) => {
@@ -240,7 +258,8 @@ exports.resourcesPage = async (req, res, next) => {
       title: page?.title || 'Resources',
       pageMeta: metaFromSeo(await contentService.getSeo('/resources'), page?.title || 'Resources'),
       page,
-      groupedResources
+      groupedResources,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -249,9 +268,10 @@ exports.resourcesPage = async (req, res, next) => {
 
 exports.galleryPage = async (req, res, next) => {
   try {
-    const [page, allGalleryItems] = await Promise.all([
+    const [page, allGalleryItems, footerSettings] = await Promise.all([
       contentService.getPage('/gallery'),
-      contentService.getGallery()
+      contentService.getGallery(),
+      contentService.getFooterSettings()
     ]);
 
     const activeCategory = (req.query.category || '').trim().toLowerCase();
@@ -266,7 +286,8 @@ exports.galleryPage = async (req, res, next) => {
       page,
       galleryItems,
       categories,
-      activeCategory
+      activeCategory,
+      footerSettings
     });
   } catch (error) {
     next(error);
@@ -275,16 +296,18 @@ exports.galleryPage = async (req, res, next) => {
 
 exports.contactPage = async (req, res, next) => {
   try {
-    const [page, contactSettings] = await Promise.all([
+    const [page, contactSettings, footerSettings] = await Promise.all([
       contentService.getPage('/contact'),
-      contentService.getContactSettings()
+      contentService.getContactSettings(),
+      contentService.getFooterSettings()
     ]);
 
     render(res, 'pages/contact/index', {
       title: page?.title || 'Contact',
       pageMeta: metaFromSeo(await contentService.getSeo('/contact'), page?.title || 'Contact'),
       page,
-      contactSettings
+      contactSettings,
+      footerSettings
     });
   } catch (error) {
     next(error);

@@ -1,0 +1,37 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="h5 mb-1 text-capitalize"><%= moduleKey %></h2>
+    <p class="text-muted mb-0">Manage records, publish state, sort order, and media-linked content.</p>
+  </div>
+  <a href="/admin/modules/<%= moduleKey %>/create" class="btn btn-sdg">Create New</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <% Object.keys(records[0] || { id: '', title: '', slug: '', status: '', sort_order: '' }).forEach((key) => { %>
+              <th><%= key %></th>
+            <% }) %>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% records.forEach((record) => { %>
+            <tr>
+              <% Object.values(record).forEach((value) => { %>
+                <td><%= value %></td>
+              <% }) %>
+              <td><a href="/admin/modules/<%= moduleKey %>/<%= record.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit</a></td>
+            </tr>
+          <% }) %>
+          <% if (!records.length) { %>
+            <tr><td colspan="99" class="text-muted">No records yet.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

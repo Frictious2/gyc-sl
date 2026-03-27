@@ -1,0 +1,87 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="h5 mb-1"><%= mode === 'create' ? `Create ${config.singular}` : `Edit ${record[config.titleField] || config.singular}` %></h2>
+    <p class="text-muted mb-0 text-capitalize"><%= moduleKey %> module with media-ready fields.</p>
+  </div>
+  <a href="/admin/modules/<%= moduleKey %>" class="btn btn-outline-secondary btn-sm">Back to list</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form action="<%= mode === 'create' ? `/admin/modules/${moduleKey}` : `/admin/modules/${moduleKey}/${record.id}` %>" method="post" class="row g-3">
+      <% config.fields.forEach((field) => { %>
+        <div class="<%= ['body','bio','challenge_text','approach_text','key_activities','impact_highlights','summary','excerpt'].includes(field) ? 'col-12' : 'col-md-6' %>">
+          <label class="form-label"><%= field %></label>
+          <% if (field === 'program_id' || field === 'related_program_id') { %>
+            <select class="form-select" name="<%= field %>">
+              <option value="">No program selected</option>
+              <% relatedOptions.programs.forEach((program) => { %>
+                <option value="<%= program.id %>" <%= String(record[field] || '') === String(program.id) ? 'selected' : '' %>><%= program.title %></option>
+              <% }) %>
+            </select>
+          <% } else if (field === 'featured_project_id' || field === 'related_project_id') { %>
+            <select class="form-select" name="<%= field %>">
+              <option value="">No project selected</option>
+              <% relatedOptions.projects.forEach((project) => { %>
+                <option value="<%= project.id %>" <%= String(record[field] || '') === String(project.id) ? 'selected' : '' %>><%= project.title %></option>
+              <% }) %>
+            </select>
+          <% } else if (field.endsWith('_image_id') || field === 'media_id' || field === 'logo_media_id' || field === 'photo_media_id' || field === 'file_media_id') { %>
+            <div class="d-flex gap-2">
+              <select class="form-select" id="<%= field %>" name="<%= field %>">
+                <option value="">No media selected</option>
+                <% mediaItems.forEach((media) => { %>
+                  <option value="<%= media.id %>" <%= String(record[field] || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+                <% }) %>
+              </select>
+              <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="<%= field %>">Pick</button>
+            </div>
+          <% } else if (field === 'status') { %>
+            <select class="form-select" name="status">
+              <option value="published" <%= record[field] === 'published' ? 'selected' : '' %>>published</option>
+              <option value="draft" <%= record[field] === 'draft' ? 'selected' : '' %>>draft</option>
+              <option value="archived" <%= record[field] === 'archived' ? 'selected' : '' %>>archived</option>
+            </select>
+          <% } else if (field === 'project_status') { %>
+            <select class="form-select" name="project_status">
+              <option value="current" <%= record[field] === 'current' ? 'selected' : '' %>>current</option>
+              <option value="ongoing" <%= record[field] === 'ongoing' ? 'selected' : '' %>>ongoing</option>
+              <option value="completed" <%= record[field] === 'completed' ? 'selected' : '' %>>completed</option>
+            </select>
+          <% } else if (field === 'category' && moduleKey === 'news') { %>
+            <select class="form-select" name="category">
+              <option value="news" <%= record[field] === 'news' ? 'selected' : '' %>>news</option>
+              <option value="events" <%= record[field] === 'events' ? 'selected' : '' %>>events</option>
+              <option value="press" <%= record[field] === 'press' ? 'selected' : '' %>>press</option>
+            </select>
+          <% } else if (field === 'category' && moduleKey === 'resources') { %>
+            <select class="form-select" name="category">
+              <option value="publications" <%= record[field] === 'publications' ? 'selected' : '' %>>publications</option>
+              <option value="toolkits-guides" <%= record[field] === 'toolkits-guides' ? 'selected' : '' %>>toolkits-guides</option>
+              <option value="multimedia" <%= record[field] === 'multimedia' ? 'selected' : '' %>>multimedia</option>
+              <option value="external-resources" <%= record[field] === 'external-resources' ? 'selected' : '' %>>external-resources</option>
+            </select>
+          <% } else if (field === 'is_featured' || field === 'is_published') { %>
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" name="<%= field %>" id="<%= field %>" <%= record[field] ? 'checked' : '' %> />
+              <label class="form-check-label" for="<%= field %>">Yes</label>
+            </div>
+          <% } else if (['body','bio','challenge_text','approach_text','key_activities','impact_highlights','summary','excerpt'].includes(field)) { %>
+            <textarea class="form-control" name="<%= field %>" rows="5"><%= record[field] || '' %></textarea>
+          <% } else if (field === 'sort_order') { %>
+            <input class="form-control" type="number" name="sort_order" value="<%= record[field] || 0 %>" />
+          <% } else { %>
+            <input class="form-control" name="<%= field %>" value="<%= record[field] || '' %>" />
+          <% } %>
+        </div>
+      <% }) %>
+      <div class="col-12">
+        <button class="btn btn-sdg" type="submit"><%= mode === 'create' ? 'Create' : 'Save changes' %></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../../partials/admin/media-picker-modal', { mediaItems }) %>

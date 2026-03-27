@@ -29,6 +29,15 @@ class Media extends BaseModel {
 
     return rows[0] || null;
   }
+
+  static delete(id) {
+    return this.query(
+      `UPDATE media_library
+       SET deleted_at = NOW(), status = 'inactive'
+       WHERE id = :id`,
+      { id }
+    );
+  }
 }
 
 module.exports = Media;

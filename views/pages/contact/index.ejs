@@ -14,13 +14,25 @@
         <div class="sdg-card h-100">
           <h2 class="h4">Contact Form</h2>
           <%- include('../../partials/flash-messages') %>
-          <form action="/contact" method="post" class="row g-3">
-            <div class="col-12"><input class="form-control" name="full_name" placeholder="Full Name *" required /></div>
-            <div class="col-md-6"><input class="form-control" name="email" type="email" placeholder="Email Address *" required /></div>
-            <div class="col-md-6"><input class="form-control" name="phone" placeholder="Phone Number" /></div>
-            <div class="col-12"><input class="form-control" name="organization" placeholder="Organization (optional)" /></div>
-            <div class="col-12"><input class="form-control" name="subject" placeholder="Subject *" required /></div>
-            <div class="col-12"><textarea class="form-control" rows="6" name="message" placeholder="Message *" required></textarea></div>
+          <form action="/contact" method="post" class="row g-3 needs-validation" novalidate>
+            <div class="col-12">
+              <input class="form-control <%= formErrors.full_name ? 'is-invalid' : '' %>" name="full_name" value="<%= oldInput.full_name || '' %>" placeholder="Full Name *" required />
+              <%- include('../../partials/form-field-error', { field: 'full_name' }) %>
+            </div>
+            <div class="col-md-6">
+              <input class="form-control <%= formErrors.email ? 'is-invalid' : '' %>" name="email" type="email" value="<%= oldInput.email || '' %>" placeholder="Email Address *" required />
+              <%- include('../../partials/form-field-error', { field: 'email' }) %>
+            </div>
+            <div class="col-md-6"><input class="form-control" name="phone" value="<%= oldInput.phone || '' %>" placeholder="Phone Number" /></div>
+            <div class="col-12"><input class="form-control" name="organization" value="<%= oldInput.organization || '' %>" placeholder="Organization (optional)" /></div>
+            <div class="col-12">
+              <input class="form-control <%= formErrors.subject ? 'is-invalid' : '' %>" name="subject" value="<%= oldInput.subject || '' %>" placeholder="Subject *" required />
+              <%- include('../../partials/form-field-error', { field: 'subject' }) %>
+            </div>
+            <div class="col-12">
+              <textarea class="form-control <%= formErrors.message ? 'is-invalid' : '' %>" rows="6" name="message" placeholder="Message *" required><%= oldInput.message || '' %></textarea>
+              <%- include('../../partials/form-field-error', { field: 'message' }) %>
+            </div>
             <div class="col-12"><button class="btn btn-sdg" type="submit">Send Message</button></div>
           </form>
         </div>

@@ -1,6 +1,12 @@
 const express = require('express');
 const publicController = require('../controllers/publicController');
 const formController = require('../controllers/formController');
+const {
+  contactRules,
+  volunteerRules,
+  partnershipRules,
+  newsletterRules
+} = require('../middleware/validators');
 
 const router = express.Router();
 
@@ -24,9 +30,9 @@ router.get('/resources', publicController.resourcesPage);
 router.get('/gallery', publicController.galleryPage);
 router.get('/contact', publicController.contactPage);
 
-router.post('/contact', formController.contact);
-router.post('/volunteer-application', formController.volunteer);
-router.post('/partnership-inquiry', formController.partner);
-router.post('/newsletter-subscribe', formController.newsletter);
+router.post('/contact', contactRules, formController.contact);
+router.post('/volunteer-application', volunteerRules, formController.volunteer);
+router.post('/partnership-inquiry', partnershipRules, formController.partner);
+router.post('/newsletter-subscribe', newsletterRules, formController.newsletter);
 
 module.exports = router;

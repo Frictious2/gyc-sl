@@ -4,7 +4,7 @@
       <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <h2 class="h5"><%= module.label %></h2>
-          <p class="text-muted">CRUD screens for this module will be added in the next phase.</p>
+          <p class="text-muted">Editor-ready module with publish state, ordering, and media-aware fields.</p>
           <% if (module.slug === 'pages') { %>
             <a href="/admin/pages" class="btn btn-outline-secondary">Open</a>
           <% } else if (module.slug === 'seo') { %>
@@ -13,8 +13,10 @@
             <a href="/admin/media" class="btn btn-outline-secondary">Open</a>
           <% } else if (module.slug === 'footer') { %>
             <a href="/admin/contact-block" class="btn btn-outline-secondary">Open</a>
+          <% } else if (['programs','projects','news','resources','gallery','partners','team','board','districts'].includes(module.slug)) { %>
+            <a href="/admin/modules/<%= module.slug %>" class="btn btn-outline-secondary">Open</a>
           <% } else { %>
-            <a href="#" class="btn btn-outline-secondary disabled">Coming next</a>
+            <a href="#" class="btn btn-outline-secondary disabled">Planned</a>
           <% } %>
         </div>
       </div>

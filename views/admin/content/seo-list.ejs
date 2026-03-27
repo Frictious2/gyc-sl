@@ -1,0 +1,24 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Meta Title</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% entries.forEach((entry) => { %>
+            <tr>
+              <td><code><%= entry.route_path %></code></td>
+              <td><%= entry.meta_title %></td>
+              <td><a href="/admin/seo/<%= entry.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

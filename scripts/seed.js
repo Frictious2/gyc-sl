@@ -276,6 +276,15 @@ async function main() {
     );
   }
 
+  for (const [settingKey, settingValue] of Object.entries(seedData.footerSettings || {})) {
+    await db.execute(
+      `INSERT INTO site_settings (setting_key, setting_value, setting_group, status)
+       VALUES (?, ?, 'footer', 'active')
+       ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), status = 'active'`,
+      [settingKey, settingValue]
+    );
+  }
+
   console.log('Database schema applied and seeded from the official GYC content document.');
   await db.end();
 }

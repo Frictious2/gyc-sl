@@ -1,0 +1,18 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form action="/admin/footer" method="post" class="row g-3">
+      <% ['footer_about','footer_contact_summary','footer_socials','footer_quick_links','footer_program_links','footer_get_involved_links','footer_bottom_text'].forEach((key) => { %>
+        <% const existing = settings.find((item) => item.setting_key === key); %>
+        <div class="col-12">
+          <label class="form-label"><%= key.replace(/_/g, ' ') %></label>
+          <textarea class="form-control" name="<%= key %>" rows="<%= key === 'footer_bottom_text' ? 2 : 4 %>"><%= (existing && existing.setting_value) || fallback[key] || '' %></textarea>
+        </div>
+      <% }) %>
+      <div class="col-12">
+        <button class="btn btn-sdg" type="submit">Save footer settings</button>
+      </div>
+    </form>
+  </div>
+</div>

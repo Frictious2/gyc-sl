@@ -78,3 +78,88 @@ exports.updateSection = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.createSectionItem = async (req, res, next) => {
+  try {
+    await Page.createSectionItem({
+      section_id: req.body.section_id,
+      item_type: req.body.item_type || 'card',
+      title: req.body.title || null,
+      subtitle: req.body.subtitle || null,
+      body: req.body.body || null,
+      meta_json: req.body.meta_json || null,
+      image_id: req.body.image_id || null,
+      link_label: req.body.link_label || null,
+      link_url: req.body.link_url || null,
+      status: req.body.status || 'published',
+      is_published: req.body.is_published ? 1 : 0,
+      sort_order: Number(req.body.sort_order || 0)
+    });
+
+    req.flash('success', 'Section item added successfully.');
+    res.redirect(`/admin/pages/${req.body.page_id}/edit`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateSectionItem = async (req, res, next) => {
+  try {
+    await Page.updateSectionItem(req.params.id, {
+      item_type: req.body.item_type || 'card',
+      title: req.body.title || null,
+      subtitle: req.body.subtitle || null,
+      body: req.body.body || null,
+      meta_json: req.body.meta_json || null,
+      image_id: req.body.image_id || null,
+      link_label: req.body.link_label || null,
+      link_url: req.body.link_url || null,
+      status: req.body.status || 'published',
+      is_published: req.body.is_published ? 1 : 0,
+      sort_order: Number(req.body.sort_order || 0)
+    });
+
+    req.flash('success', 'Section item updated successfully.');
+    res.redirect(`/admin/pages/${req.body.page_id}/edit`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteSectionItem = async (req, res, next) => {
+  try {
+    await Page.deleteSectionItem(req.params.id);
+    req.flash('success', 'Section item deleted.');
+    res.redirect(`/admin/pages/${req.body.page_id}/edit`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createSectionMedia = async (req, res, next) => {
+  try {
+    await Page.createSectionMedia({
+      section_id: req.body.section_id,
+      media_id: req.body.media_id,
+      media_role: req.body.media_role || 'gallery',
+      caption: req.body.caption || null,
+      alt_text: req.body.alt_text || null,
+      sort_order: Number(req.body.sort_order || 0)
+    });
+
+    req.flash('success', 'Section media linked successfully.');
+    res.redirect(`/admin/pages/${req.body.page_id}/edit`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteSectionMedia = async (req, res, next) => {
+  try {
+    await Page.deleteSectionMedia(req.params.id);
+    req.flash('success', 'Section media removed.');
+    res.redirect(`/admin/pages/${req.body.page_id}/edit`);
+  } catch (error) {
+    next(error);
+  }
+};

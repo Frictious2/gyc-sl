@@ -3,7 +3,17 @@
     <h2 class="h5">Media Library</h2>
     <p class="text-muted">Upload once, reuse everywhere: hero sections, programs, projects, gallery, team, partner logos, CTA banners, and page visuals.</p>
     <%- include('../../partials/flash-messages') %>
-    <form action="/admin/media" method="post" enctype="multipart/form-data" class="row g-3 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-end mb-4">
+      <div>
+        <h2 class="h5 mb-1">Media Library</h2>
+        <p class="text-muted mb-0">Upload once, reuse everywhere: hero sections, programs, projects, gallery, team, partner logos, CTA banners, and page visuals.</p>
+      </div>
+      <div class="admin-search-shell">
+        <label class="form-label mb-1">Search media</label>
+        <input class="form-control admin-search-input" data-filter-target=".media-library-grid .filter-card" data-filter-key=".filter-title" placeholder="Search by title or filename" />
+      </div>
+    </div>
+    <form action="/admin/media" method="post" enctype="multipart/form-data" class="row g-3 mb-4 needs-validation" novalidate>
       <div class="col-md-4">
         <label class="form-label">Title</label>
         <input class="form-control" name="title" />
@@ -13,23 +23,46 @@
         <input class="form-control" name="alt_text" />
       </div>
       <div class="col-md-4">
-        <label class="form-label">Image file</label>
-        <input class="form-control" type="file" name="image" accept="image/*" />
+        <label class="form-label">Image files</label>
+        <input class="form-control" type="file" name="images" accept="image/*" multiple required />
       </div>
       <div class="col-12">
-        <button class="btn btn-sdg" type="submit">Upload media</button>
+        <button class="btn btn-sdg" type="submit">
+          <span class="submit-label">Upload media</span>
+        </button>
       </div>
     </form>
 
-    <div class="row g-4">
+    <div class="row g-4 media-library-grid">
       <% mediaItems.forEach((media) => { %>
-        <div class="col-md-6 col-xl-4">
-          <div class="card border-0 shadow-sm h-100">
-            <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name %>" class="card-img-top media-thumb" />
+        <div class="col-md-6 col-xl-4 filter-card">
+          <div class="card border-0 shadow-sm h-100 media-card">
+            <button class="btn p-0 text-start" type="button" data-bs-toggle="modal" data-bs-target="#mediaModal-<%= media.id %>">
+              <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name %>" class="card-img-top media-thumb" />
+            </button>
             <div class="card-body">
-              <h3 class="h6"><%= media.title || media.file_name %></h3>
+              <h3 class="h6 filter-title"><%= media.title || media.file_name %></h3>
               <p class="small text-muted mb-1"><code><%= media.file_path %></code></p>
-              <p class="small text-muted mb-0">ID: <%= media.id %></p>
+              <p class="small text-muted mb-3">ID: <%= media.id %></p>
+              <form action="/admin/media/<%= media.id %>/delete" method="post">
+                <button class="btn btn-outline-danger btn-sm" type="submit">Delete media</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="mediaModal-<%= media.id %>" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title"><%= media.title || media.file_name %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name %>" class="img-fluid rounded-4 mb-3" />
+                <p class="mb-1"><strong>Path:</strong> <code><%= media.file_path %></code></p>
+                <p class="mb-1"><strong>Alt text:</strong> <%= media.alt_text || 'Not set' %></p>
+                <p class="mb-0"><strong>File size:</strong> <%= media.file_size || 'Unknown' %> bytes</p>
+              </div>
             </div>
           </div>
         </div>

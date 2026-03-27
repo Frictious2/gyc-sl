@@ -177,6 +177,15 @@ exports.getContactSettings = () =>
     async () => seedData.contactSettings
   );
 
+exports.getFooterSettings = () =>
+  withFallback(
+    async () => ({
+      ...(seedData.footerSettings || {}),
+      ...mapSettings(await PublicSite.getSettingsByGroup('footer'))
+    }),
+    async () => seedData.footerSettings || {}
+  );
+
 exports.getSeo = (routePath) =>
   withFallback(
     async () => PublicSite.getSeoByRoute(routePath),

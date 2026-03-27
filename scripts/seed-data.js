@@ -619,13 +619,22 @@ module.exports = {
     mobile_money_details: 'Orange Money / Africell Money details to be added by admin.'
   },
   contactSettings: {
-    contact_intro: 'We?d love to hear from you. Whether you have questions, want to partner, or just want to connect, reach out to us.',
+    contact_intro: 'We would love to hear from you. Whether you have questions, want to partner, or just want to connect, reach out to us.',
     contact_address: 'Global Youth Counterpart for Sustainable Development Sierra Leone (GYC)\n41 MacDonald Street\nFreetown, Sierra Leone',
     contact_phone: '+232 78 277 377\n+232 77 945 694',
     contact_email: 'General Inquiries: info@gycsl.org\nPrograms: programmes@gycsl.org\nPartnerships: partnerships@gycsl.org\nMedia: communications@gycsl.org',
     contact_socials: 'Facebook: @GYCSierraLeone\nTwitter/X: @GYC_SierraLeone\nInstagram: @gyc_sierraleone\nLinkedIn: GYC Sierra Leone\nYouTube: GYC Sierra Leone',
     contact_hours: 'Monday - Friday: 9:00 AM - 5:00 PM\nSaturday - Sunday: Closed',
     contact_map_embed: '[Embedded Google Map showing office location]'
+  },
+  footerSettings: {
+    footer_about: 'GYC Sierra Leone\nBuilding an emerging society of young leaders for sustainable development since 2017.',
+    footer_contact_summary: '41 MacDonald Street, Freetown\n+232 78 277 377\ninfo@gycsl.org',
+    footer_socials: 'Facebook: @GYCSierraLeone\nTwitter/X: @GYC_SierraLeone\nInstagram: @gyc_sierraleone\nLinkedIn: GYC Sierra Leone\nYouTube: GYC Sierra Leone',
+    footer_quick_links: 'Home|/\nAbout Us|/about\nPrograms|/programs\nProjects|/projects\nNews & Events|/news\nContact Us|/contact',
+    footer_program_links: 'Climate Action|/programs/climate-action\nSDG Advocacy|/programs/sdg-advocacy\nGender Equality|/programs/gender-equality\nYouth Employment|/programs/youth-employment\nGood Governance|/programs/governance',
+    footer_get_involved_links: 'Volunteer|/get-involved/volunteer\nPartner With Us|/get-involved/partner\nDonate|/donate',
+    footer_bottom_text: 'Global Youth Counterpart for Sustainable Development Sierra Leone. All Rights Reserved.'
   }
 };
 

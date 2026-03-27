@@ -43,3 +43,58 @@
     </div>
   </div>
 </section>
+
+<% if (page.route_path === '/get-involved/volunteer') { %>
+  <section class="py-5 bg-soft">
+    <div class="container">
+      <div class="sdg-card">
+        <h2 class="h4">Volunteer Application Form</h2>
+        <%- include('../partials/flash-messages') %>
+        <form action="/volunteer-application" method="post" class="row g-3 needs-validation" novalidate>
+          <div class="col-md-6">
+            <input class="form-control <%= formErrors.full_name ? 'is-invalid' : '' %>" name="full_name" value="<%= oldInput.full_name || '' %>" placeholder="Full Name *" required />
+            <%- include('../partials/form-field-error', { field: 'full_name' }) %>
+          </div>
+          <div class="col-md-6">
+            <input class="form-control <%= formErrors.email ? 'is-invalid' : '' %>" name="email" type="email" value="<%= oldInput.email || '' %>" placeholder="Email Address *" required />
+            <%- include('../partials/form-field-error', { field: 'email' }) %>
+          </div>
+          <div class="col-md-6"><input class="form-control" name="phone" value="<%= oldInput.phone || '' %>" placeholder="Phone Number" /></div>
+          <div class="col-md-6"><input class="form-control" name="district" value="<%= oldInput.district || '' %>" placeholder="District" /></div>
+          <div class="col-12"><input class="form-control" name="interests" value="<%= oldInput.interests || '' %>" placeholder="Areas of interest" /></div>
+          <div class="col-12"><textarea class="form-control" name="motivation" rows="5" placeholder="Why do you want to volunteer?"><%= oldInput.motivation || '' %></textarea></div>
+          <div class="col-12"><button class="btn btn-sdg" type="submit">Apply to Volunteer</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+<% } %>
+
+<% if (page.route_path === '/get-involved/partner') { %>
+  <section class="py-5 bg-soft">
+    <div class="container">
+      <div class="sdg-card">
+        <h2 class="h4">Partnership Inquiry Form</h2>
+        <%- include('../partials/flash-messages') %>
+        <form action="/partnership-inquiry" method="post" class="row g-3 needs-validation" novalidate>
+          <div class="col-md-6">
+            <input class="form-control <%= formErrors.organisation_name ? 'is-invalid' : '' %>" name="organisation_name" value="<%= oldInput.organisation_name || '' %>" placeholder="Organisation Name *" required />
+            <%- include('../partials/form-field-error', { field: 'organisation_name' }) %>
+          </div>
+          <div class="col-md-6">
+            <input class="form-control <%= formErrors.contact_name ? 'is-invalid' : '' %>" name="contact_name" value="<%= oldInput.contact_name || '' %>" placeholder="Contact Name *" required />
+            <%- include('../partials/form-field-error', { field: 'contact_name' }) %>
+          </div>
+          <div class="col-md-6">
+            <input class="form-control <%= formErrors.email ? 'is-invalid' : '' %>" name="email" type="email" value="<%= oldInput.email || '' %>" placeholder="Email Address *" required />
+            <%- include('../partials/form-field-error', { field: 'email' }) %>
+          </div>
+          <div class="col-md-6"><input class="form-control" name="phone" value="<%= oldInput.phone || '' %>" placeholder="Phone Number" /></div>
+          <div class="col-md-6"><input class="form-control" name="partnership_type" value="<%= oldInput.partnership_type || '' %>" placeholder="Partnership Type" /></div>
+          <div class="col-12"><textarea class="form-control" name="message" rows="5" placeholder="Tell us about the partnership opportunity"><%= oldInput.message || '' %></textarea></div>
+          <div class="col-12"><button class="btn btn-sdg" type="submit">Submit Inquiry</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+<% } %>

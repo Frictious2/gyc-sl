@@ -1,21 +1,29 @@
 :root {
   --admin-sidebar: #163049;
+  --admin-sidebar-soft: #214b6d;
   --admin-accent: #26bde2;
   --admin-accent-2: #fd6925;
   --admin-bg: #f5f8fb;
+  --admin-surface: #ffffff;
+  --admin-border: rgba(22, 48, 73, 0.08);
+  --admin-text: #163049;
+  --admin-muted: #6a7f92;
 }
 
 body.admin-body {
   font-family: 'Source Sans 3', sans-serif;
   background: var(--admin-bg);
+  color: var(--admin-text);
 }
 
 .admin-sidebar {
   width: 280px;
   min-height: 100vh;
+  position: sticky;
+  top: 0;
   background:
-    linear-gradient(180deg, rgba(229, 36, 59, 0.15), transparent 25%),
-    linear-gradient(180deg, var(--admin-sidebar), #214b6d);
+    linear-gradient(180deg, rgba(229, 36, 59, 0.14), transparent 24%),
+    linear-gradient(180deg, var(--admin-sidebar), var(--admin-sidebar-soft));
 }
 
 .admin-brand {
@@ -24,8 +32,26 @@ body.admin-body {
   font-weight: 800;
 }
 
+.admin-sidebar .nav-link {
+  border-radius: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+}
+
+.admin-sidebar .nav-link:hover,
+.admin-sidebar .nav-link:focus {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
 .admin-topbar {
   min-height: 76px;
+}
+
+.admin-main .card,
+.admin-main .admin-stat-card {
+  border: 1px solid var(--admin-border);
 }
 
 .admin-stat-card {
@@ -55,8 +81,88 @@ body.admin-body {
   font-weight: 700;
 }
 
+.btn-sdg:hover,
+.btn-sdg:focus {
+  color: #fff;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.9rem;
+  border-color: rgba(22, 48, 73, 0.12);
+  min-height: 46px;
+}
+
+textarea.form-control {
+  min-height: auto;
+}
+
+.form-label {
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.table {
+  --bs-table-bg: transparent;
+}
+
+.table thead th {
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--admin-muted);
+}
+
+.table tbody td {
+  vertical-align: middle;
+}
+
+.admin-search-shell {
+  min-width: min(100%, 320px);
+}
+
+.admin-search-input {
+  min-width: 260px;
+}
+
 .media-thumb {
   aspect-ratio: 16 / 10;
   object-fit: cover;
   background: linear-gradient(135deg, rgba(38, 189, 226, 0.12), rgba(253, 105, 37, 0.12));
+}
+
+.media-card {
+  overflow: hidden;
+}
+
+.submission-count,
+.module-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(38, 189, 226, 0.1);
+  color: var(--admin-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.alert {
+  border-radius: 1rem;
+}
+
+.invalid-feedback {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 991.98px) {
+  .admin-shell {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    min-height: auto;
+    position: relative;
+  }
 }

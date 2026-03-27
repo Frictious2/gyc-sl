@@ -1,0 +1,32 @@
+<div class="modal fade" id="mediaPickerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Media</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <% mediaItems.forEach((media) => { %>
+            <div class="col-md-4 col-xl-3">
+              <button
+                class="btn w-100 text-start p-0 border-0 media-picker-option"
+                type="button"
+                data-media-id="<%= media.id %>"
+                data-media-label="<%= media.title || media.file_name %>"
+              >
+                <div class="card border-0 shadow-sm h-100">
+                  <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name %>" class="card-img-top media-thumb" />
+                  <div class="card-body">
+                    <h6 class="mb-1"><%= media.title || media.file_name %></h6>
+                    <p class="small text-muted mb-0">ID: <%= media.id %></p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

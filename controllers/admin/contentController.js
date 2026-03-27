@@ -1,7 +1,5 @@
 const modules = [
   { slug: 'pages', label: 'Pages & Sections' },
-  { slug: 'homepage', label: 'Homepage Sections' },
-  { slug: 'about', label: 'About Content' },
   { slug: 'programs', label: 'Programs' },
   { slug: 'projects', label: 'Projects' },
   { slug: 'news', label: 'News & Events' },
@@ -11,7 +9,7 @@ const modules = [
   { slug: 'team', label: 'Team Members' },
   { slug: 'board', label: 'Board Members' },
   { slug: 'districts', label: 'District Coordinators' },
-  { slug: 'footer', label: 'Footer & Contact Block' },
+  { slug: 'footer', label: 'Contact & Footer Block' },
   { slug: 'seo', label: 'SEO Metadata' },
   { slug: 'media', label: 'Media Library' }
 ];

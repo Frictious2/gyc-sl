@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS media_library (
   status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at DATETIME NULL
+  deleted_at DATETIME NULL,
+  CONSTRAINT fk_media_uploaded_by FOREIGN KEY (uploaded_by) REFERENCES admin_users(id)
 );
 
 CREATE TABLE IF NOT EXISTS pages (
@@ -113,7 +114,8 @@ CREATE TABLE IF NOT EXISTS section_media (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME NULL,
   CONSTRAINT fk_section_media_section FOREIGN KEY (section_id) REFERENCES page_sections(id),
-  CONSTRAINT fk_section_media_media FOREIGN KEY (media_id) REFERENCES media_library(id)
+  CONSTRAINT fk_section_media_media FOREIGN KEY (media_id) REFERENCES media_library(id),
+  UNIQUE KEY uniq_section_media (section_id, media_id, media_role)
 );
 
 CREATE TABLE IF NOT EXISTS programs (

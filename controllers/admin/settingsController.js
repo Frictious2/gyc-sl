@@ -32,12 +32,34 @@ exports.updateContactBlock = async (req, res, next) => {
   }
 };
 
-exports.seo = (req, res) => {
-  res.render('admin/content/seo', {
-    layout: 'layouts/admin',
-    title: 'SEO Fields',
-    seoEntries: seedData.seo
-  });
+exports.footer = async (req, res, next) => {
+  try {
+    const settings = await Setting.byGroup('footer');
+
+    res.render('admin/content/footer-settings', {
+      layout: 'layouts/admin',
+      title: 'Footer Settings',
+      settings,
+      fallback: seedData.footerSettings || {}
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateFooter = async (req, res, next) => {
+  try {
+    const entries = Object.entries(req.body);
+
+    for (const [key, value] of entries) {
+      await Setting.save(key, value, 'footer');
+    }
+
+    req.flash('success', 'Footer settings updated successfully.');
+    res.redirect('/admin/footer');
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.media = async (req, res, next) => {

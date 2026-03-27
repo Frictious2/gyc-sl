@@ -22,6 +22,18 @@ class Setting extends BaseModel {
       { settingKey, settingValue, settingGroup }
     );
   }
+
+  static async byKey(settingKey) {
+    const rows = await this.query(
+      `SELECT id, setting_key, setting_value, setting_group
+       FROM site_settings
+       WHERE setting_key = :settingKey AND deleted_at IS NULL
+       LIMIT 1`,
+      { settingKey }
+    );
+
+    return rows[0] || null;
+  }
 }
 
 module.exports = Setting;

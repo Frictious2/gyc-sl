@@ -1,0 +1,48 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <form action="/admin/seo/<%= entry.id %>" method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Route</label>
+        <input class="form-control" name="route_path" value="<%= entry.route_path || '' %>" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">OG Image</label>
+        <select class="form-select" name="og_image_id">
+          <option value="">No image selected</option>
+          <% mediaItems.forEach((media) => { %>
+            <option value="<%= media.id %>" <%= String(entry.og_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Meta Title</label>
+        <input class="form-control" name="meta_title" value="<%= entry.meta_title || '' %>" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Meta Description</label>
+        <textarea class="form-control" name="meta_description" rows="4"><%= entry.meta_description || '' %></textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Keywords</label>
+        <textarea class="form-control" name="meta_keywords" rows="3"><%= entry.meta_keywords || '' %></textarea>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">OG Title</label>
+        <input class="form-control" name="og_title" value="<%= entry.og_title || '' %>" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Canonical URL</label>
+        <input class="form-control" name="canonical_url" value="<%= entry.canonical_url || '' %>" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">OG Description</label>
+        <textarea class="form-control" name="og_description" rows="3"><%= entry.og_description || '' %></textarea>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-sdg" type="submit">Save SEO</button>
+      </div>
+    </form>
+  </div>
+</div>
