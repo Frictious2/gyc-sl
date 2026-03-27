@@ -60,4 +60,13 @@
       form.classList.add('was-validated');
     });
   });
+
+  document.querySelectorAll('[data-auto-submit]').forEach((element) => {
+    element.addEventListener('change', () => {
+      const form = element.closest('form');
+      if (form) {
+        form.requestSubmit();
+      }
+    });
+  });
 })();

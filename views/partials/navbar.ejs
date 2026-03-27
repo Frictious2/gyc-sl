@@ -1,9 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-white border-bottom navbar-shell">
   <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
-      <span class="brand-mark"></span>
-      <span>GYC Sierra Leone</span>
-    </a>
+    <%- include('site-brand', { brandHref: '/', brandCompact: true, brandTitle: branding.shortName, brandSubtitle: branding.name }) %>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

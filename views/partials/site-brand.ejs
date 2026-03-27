@@ -1,0 +1,25 @@
+<%
+  const localsData = typeof locals !== 'undefined' ? locals : {};
+  const brand = localsData.branding || {};
+  const href = Object.prototype.hasOwnProperty.call(localsData, 'brandHref') ? localsData.brandHref : '/';
+  const variant = Object.prototype.hasOwnProperty.call(localsData, 'brandVariant') ? localsData.brandVariant : 'light';
+  const compact = Boolean(localsData.brandCompact);
+  const showTagline = Boolean(localsData.brandShowTagline);
+  const title = Object.prototype.hasOwnProperty.call(localsData, 'brandTitle') ? localsData.brandTitle : brand.name;
+  const subtitle = Object.prototype.hasOwnProperty.call(localsData, 'brandSubtitle') ? localsData.brandSubtitle : '';
+%>
+<a
+  href="<%= href %>"
+  class="site-brand <%= compact ? 'site-brand-compact' : '' %> <%= variant === 'dark' ? 'site-brand-on-dark' : '' %> text-decoration-none"
+>
+  <img
+    src="<%= brand.logoPath %>"
+    alt="<%= brand.logoAlt || `${brand.name || 'Brand'} logo` %>"
+    class="site-brand-logo"
+  />
+  <span class="site-brand-copy">
+    <span class="site-brand-title"><%= title || brand.name || 'GYC Sierra Leone' %></span>
+    <% if (subtitle) { %><span class="site-brand-subtitle"><%= subtitle %></span><% } %>
+    <% if (showTagline && brand.tagline) { %><span class="site-brand-tagline"><%= brand.tagline %></span><% } %>
+  </span>
+</a>

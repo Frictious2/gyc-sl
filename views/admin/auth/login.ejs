@@ -1,5 +1,8 @@
 <section class="min-vh-100 d-flex align-items-center justify-content-center">
   <div class="login-card card border-0 shadow-lg p-4">
+    <div class="mb-4">
+      <%- include('../../partials/site-brand', { brandHref: '/', brandTitle: branding.name, brandShowTagline: true }) %>
+    </div>
     <h1 class="h3 mb-3">Admin Login</h1>
     <%- include('../../partials/flash-messages') %>
     <form action="/admin/login" method="post" class="row g-3">

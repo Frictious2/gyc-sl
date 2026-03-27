@@ -33,7 +33,12 @@
               <textarea class="form-control <%= formErrors.message ? 'is-invalid' : '' %>" rows="6" name="message" placeholder="Message *" required><%= oldInput.message || '' %></textarea>
               <%- include('../../partials/form-field-error', { field: 'message' }) %>
             </div>
-            <div class="col-12"><button class="btn btn-sdg" type="submit">Send Message</button></div>
+            <div class="col-12">
+              <button class="btn btn-sdg" type="submit" data-submitting-label="Sending...">
+                <span class="submit-label">Send Message</span>
+              </button>
+              <p class="small text-muted mt-3 mb-0">We will send a confirmation email after your message is received.</p>
+            </div>
           </form>
         </div>
       </div>

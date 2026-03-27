@@ -25,6 +25,14 @@ module.exports = (req, res, next) => {
       'Good Governance & Civic Engagement': 'sdg-navy'
     }
   };
+  res.locals.branding = {
+    name: process.env.APP_NAME || 'GYC Sierra Leone',
+    shortName: 'GYC',
+    adminName: 'GYC Admin',
+    logoPath: '/images/gycsl-logo.svg',
+    logoAlt: 'Global Youth Counterpart for Sustainable Development Sierra Leone logo',
+    tagline: 'Building an emerging society of young leaders'
+  };
   res.locals.currentYear = new Date().getFullYear();
   next();
 };

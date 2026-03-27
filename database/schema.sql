@@ -294,10 +294,12 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   phone VARCHAR(80) NULL,
   subject VARCHAR(180) NULL,
   message LONGTEXT NOT NULL,
-  status ENUM('new', 'reviewed', 'responded', 'archived') NOT NULL DEFAULT 'new',
+  status ENUM('new', 'read', 'replied') NOT NULL DEFAULT 'new',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at DATETIME NULL
+  deleted_at DATETIME NULL,
+  INDEX idx_contact_messages_status_created (status, created_at),
+  INDEX idx_contact_messages_email_created (email, created_at)
 );
 
 CREATE TABLE IF NOT EXISTS volunteer_applications (
@@ -368,3 +370,13 @@ CREATE TABLE IF NOT EXISTS seo_meta (
   UNIQUE KEY uniq_seo_route (entity_type, route_path),
   CONSTRAINT fk_seo_og_image FOREIGN KEY (og_image_id) REFERENCES media_library(id)
 );
+
+ALTER TABLE contact_messages
+  MODIFY COLUMN status ENUM('new', 'reviewed', 'responded', 'archived', 'read', 'replied') NOT NULL DEFAULT 'new';
+
+UPDATE contact_messages SET status = 'read' WHERE status = 'reviewed';
+UPDATE contact_messages SET status = 'replied' WHERE status = 'responded';
+UPDATE contact_messages SET status = 'read' WHERE status = 'archived';
+
+ALTER TABLE contact_messages
+  MODIFY COLUMN status ENUM('new', 'read', 'replied') NOT NULL DEFAULT 'new';

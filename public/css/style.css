@@ -50,12 +50,65 @@ a {
   backdrop-filter: saturate(180%) blur(10px);
 }
 
-.brand-mark {
-  width: 0.95rem;
-  height: 0.95rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--sdg-red), var(--sdg-orange), var(--sdg-yellow), var(--sdg-green), var(--sdg-blue));
-  box-shadow: 0 0 0 0.35rem rgba(10, 151, 217, 0.12);
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--text-dark);
+}
+
+.site-brand-logo {
+  width: 3.4rem;
+  height: 3.4rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.site-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.site-brand-title,
+.site-brand-subtitle {
+  font-family: 'Manrope', sans-serif;
+  line-height: 1.05;
+}
+
+.site-brand-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.site-brand-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.site-brand-tagline {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.site-brand-compact .site-brand-logo {
+  width: 2.85rem;
+  height: 2.85rem;
+}
+
+.site-brand-compact .site-brand-title {
+  font-size: 1rem;
+}
+
+.site-brand-compact .site-brand-subtitle {
+  font-size: 0.68rem;
 }
 
 .navbar .nav-link {
@@ -357,6 +410,10 @@ a {
     #fff;
 }
 
+.site-footer .site-brand {
+  margin-bottom: 1rem;
+}
+
 .social-pill {
   display: inline-grid;
   place-items: center;
@@ -384,6 +441,20 @@ a {
 }
 
 @media (max-width: 767.98px) {
+  .site-brand {
+    gap: 0.7rem;
+  }
+
+  .site-brand-logo {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .site-brand-subtitle,
+  .site-brand-tagline {
+    font-size: 0.64rem;
+  }
+
   .cta-panel,
   .newsletter-panel {
     padding: 1.5rem;

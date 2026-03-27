@@ -1,0 +1,28 @@
+<svg width="920" height="280" viewBox="0 0 920 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="920" height="280" rx="28" fill="white"/>
+  <defs>
+    <linearGradient id="ringA" x1="52" y1="56" x2="194" y2="198" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E5243B"/>
+      <stop offset="0.2" stop-color="#FD6925"/>
+      <stop offset="0.4" stop-color="#FCC30B"/>
+      <stop offset="0.6" stop-color="#56C02B"/>
+      <stop offset="0.8" stop-color="#26BDE2"/>
+      <stop offset="1" stop-color="#0A97D9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="134" cy="140" r="70" stroke="#D8E4EE" stroke-width="18"/>
+  <path d="M64 140C64 101.34 95.3401 70 134 70" stroke="url(#ringA)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M134 70C172.66 70 204 101.34 204 140" stroke="url(#ringA)" stroke-width="18" stroke-linecap="round" stroke-dasharray="80 16"/>
+  <path d="M204 140C204 178.66 172.66 210 134 210" stroke="url(#ringA)" stroke-width="18" stroke-linecap="round" stroke-dasharray="120 12"/>
+  <path d="M134 210C95.3401 210 64 178.66 64 140" stroke="url(#ringA)" stroke-width="18" stroke-linecap="round" stroke-dasharray="90 18"/>
+  <circle cx="134" cy="140" r="49" fill="white" stroke="#B8CBD9" stroke-width="4"/>
+  <circle cx="133" cy="198" r="8" fill="#0A97D9"/>
+  <text x="134" y="151" text-anchor="middle" font-family="Manrope, Arial, sans-serif" font-size="42" font-weight="800" fill="#19486A">GYC</text>
+  <text x="300" y="88" font-family="Manrope, Arial, sans-serif" font-size="44" font-weight="800" fill="#0F4C81">GLOBAL</text>
+  <text x="300" y="128" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="1.8" fill="#6A7F92">YOUTH COUNTERPART FOR</text>
+  <text x="300" y="180" font-family="Manrope, Arial, sans-serif" font-size="44" font-weight="800" fill="#19486A">SUSTAINABLE</text>
+  <text x="300" y="228" font-family="Manrope, Arial, sans-serif" font-size="44" font-weight="800" fill="#19486A">DEVELOPMENT</text>
+  <rect x="300" y="246" width="280" height="5" rx="2.5" fill="#E5243B"/>
+  <rect x="584" y="246" width="92" height="5" rx="2.5" fill="#56C02B"/>
+  <text x="300" y="268" font-family="Source Sans 3, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4.2" fill="#7C8D9C">BUILDING AN EMERGING SOCIETY OF YOUNG LEADERS</text>
+</svg>

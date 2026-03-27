@@ -45,6 +45,7 @@ router.get('/modules/:module/:id/edit', requireAuth, moduleController.editForm);
 router.post('/modules/:module/:id', requireAuth, moduleController.update);
 router.post('/modules/:module/:id/delete', requireAuth, moduleController.delete);
 router.get('/submissions/:type', requireAuth, submissionController.index);
+router.post('/submissions/contact/:id/status', requireAuth, submissionController.updateContactStatus);
 router.post('/submissions/:type/:id/delete', requireAuth, submissionController.delete);
 
 module.exports = router;

@@ -32,6 +32,58 @@ body.admin-body {
   font-weight: 800;
 }
 
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.site-brand-logo {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.site-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.site-brand-title,
+.site-brand-subtitle {
+  font-family: 'Manrope', sans-serif;
+  line-height: 1.05;
+}
+
+.site-brand-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+.site-brand-subtitle {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  font-weight: 700;
+}
+
+.site-brand-tagline {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.site-brand-on-dark .site-brand-title,
+.site-brand-on-dark .site-brand-subtitle,
+.site-brand-on-dark .site-brand-tagline {
+  color: #fff;
+}
+
 .admin-sidebar .nav-link {
   border-radius: 0.9rem;
   padding: 0.7rem 0.9rem;
@@ -153,6 +205,62 @@ textarea.form-control {
 
 .invalid-feedback {
   font-size: 0.9rem;
+}
+
+.submission-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--admin-text);
+  background: rgba(22, 48, 73, 0.06);
+  font-weight: 700;
+}
+
+.submission-filter:hover,
+.submission-filter:focus,
+.submission-filter.is-active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-2));
+}
+
+.submission-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  min-height: 1.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 0 0.45rem;
+}
+
+.admin-submissions-table .submission-row-unread {
+  background: rgba(38, 189, 226, 0.08);
+}
+
+.admin-submissions-table .submission-row-unread td:first-child {
+  box-shadow: inset 4px 0 0 var(--admin-accent);
+}
+
+.submission-sender-cell {
+  min-width: 220px;
+}
+
+.submission-message-preview {
+  max-width: 540px;
+  color: var(--admin-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.submission-time {
+  min-width: 140px;
+  font-size: 0.94rem;
 }
 
 @media (max-width: 991.98px) {

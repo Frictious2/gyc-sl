@@ -32,6 +32,19 @@ document.querySelectorAll('.needs-validation').forEach((form) => {
       event.stopPropagation();
     }
 
+    const isValid = form.checkValidity();
+    if (isValid) {
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = true;
+        const label = submitButton.querySelector('.submit-label');
+        const submittingLabel = submitButton.getAttribute('data-submitting-label');
+        if (label && submittingLabel) {
+          label.textContent = submittingLabel;
+        }
+      }
+    }
+
     form.classList.add('was-validated');
   });
 });

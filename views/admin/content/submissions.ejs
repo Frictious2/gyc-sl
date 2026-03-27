@@ -2,36 +2,117 @@
 
 <div class="card border-0 shadow-sm">
   <div class="card-body">
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <% Object.keys(records[0] || { id: '', created_at: '' }).forEach((key) => { %>
-              <% if (key !== 'deleted_at' && key !== 'updated_at') { %><th><%= key %></th><% } %>
-            <% }) %>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% records.forEach((record) => { %>
+    <% if (type === 'contact') { %>
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+        <div>
+          <h2 class="h5 mb-1">Contact Inbox</h2>
+          <p class="text-muted mb-0">Review new enquiries, update statuses, and keep the inbox moving.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="submission-filter <%= !activeStatus ? 'is-active' : '' %>" href="/admin/submissions/contact">
+            All <span class="submission-filter-count"><%= (statusCounts?.new || 0) + (statusCounts?.read || 0) + (statusCounts?.replied || 0) %></span>
+          </a>
+          <a class="submission-filter <%= activeStatus === 'new' ? 'is-active' : '' %>" href="/admin/submissions/contact?status=new">
+            New <span class="submission-filter-count"><%= statusCounts?.new || 0 %></span>
+          </a>
+          <a class="submission-filter <%= activeStatus === 'read' ? 'is-active' : '' %>" href="/admin/submissions/contact?status=read">
+            Read <span class="submission-filter-count"><%= statusCounts?.read || 0 %></span>
+          </a>
+          <a class="submission-filter <%= activeStatus === 'replied' ? 'is-active' : '' %>" href="/admin/submissions/contact?status=replied">
+            Replied <span class="submission-filter-count"><%= statusCounts?.replied || 0 %></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle admin-submissions-table">
+          <thead>
             <tr>
-              <% Object.entries(record).forEach(([key, value]) => { %>
-                <% if (key !== 'deleted_at' && key !== 'updated_at') { %>
-                  <td><%= value %></td>
-                <% } %>
-              <% }) %>
-              <td>
-                <form action="/admin/submissions/<%= type %>/<%= record.id %>/delete" method="post">
-                  <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
-                </form>
-              </td>
+              <th>Sender</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Received</th>
+              <th class="text-end">Actions</th>
             </tr>
-          <% }) %>
-          <% if (!records.length) { %>
-            <tr><td colspan="99" class="text-muted">No submissions yet.</td></tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <% records.forEach((record) => { %>
+              <tr class="<%= record.status === 'new' ? 'submission-row-unread' : '' %>">
+                <td class="submission-sender-cell">
+                  <div class="fw-semibold"><%= record.full_name %></div>
+                  <div><a href="mailto:<%= record.email %>"><%= record.email %></a></div>
+                  <% if (record.phone) { %><div class="text-muted small"><%= record.phone %></div><% } %>
+                </td>
+                <td>
+                  <div class="fw-semibold"><%= record.subject || 'No subject' %></div>
+                  <div class="submission-message-preview"><%= record.message %></div>
+                </td>
+                <td>
+                  <form action="/admin/submissions/contact/<%= record.id %>/status<%= activeStatus ? `?status=${encodeURIComponent(activeStatus)}` : '' %>" method="post" class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-select-sm" name="status" data-auto-submit>
+                      <option value="new" <%= record.status === 'new' ? 'selected' : '' %>>New</option>
+                      <option value="read" <%= record.status === 'read' ? 'selected' : '' %>>Read</option>
+                      <option value="replied" <%= record.status === 'replied' ? 'selected' : '' %>>Replied</option>
+                    </select>
+                    <button class="btn btn-outline-primary btn-sm" type="submit">Save</button>
+                  </form>
+                </td>
+                <td>
+                  <time datetime="<%= record.created_at %>" class="submission-time d-block">
+                    <%= new Date(record.created_at).toLocaleString('en-GB', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) %>
+                  </time>
+                </td>
+                <td class="text-end">
+                  <form action="/admin/submissions/contact/<%= record.id %>/delete" method="post" class="d-inline">
+                    <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+            <% if (!records.length) { %>
+              <tr><td colspan="5" class="text-muted">No contact messages match this filter.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <% Object.keys(records[0] || { id: '', created_at: '' }).forEach((key) => { %>
+                <% if (key !== 'deleted_at' && key !== 'updated_at') { %><th><%= key %></th><% } %>
+              <% }) %>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% records.forEach((record) => { %>
+              <tr>
+                <% Object.entries(record).forEach(([key, value]) => { %>
+                  <% if (key !== 'deleted_at' && key !== 'updated_at') { %>
+                    <td><%= value %></td>
+                  <% } %>
+                <% }) %>
+                <td>
+                  <form action="/admin/submissions/<%= type %>/<%= record.id %>/delete" method="post">
+                    <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+            <% if (!records.length) { %>
+              <tr><td colspan="99" class="text-muted">No submissions yet.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
   </div>
 </div>

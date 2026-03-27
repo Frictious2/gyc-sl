@@ -1,5 +1,6 @@
 <%
-  const footer = footerSettings || {};
+  const localsData = typeof locals !== 'undefined' ? locals : {};
+  const footer = localsData.footerSettings || {};
   const splitLinks = (value) =>
     String(value || '')
       .split('\n')
@@ -14,7 +15,7 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">
-        <h5>GYC Sierra Leone</h5>
+        <%- include('site-brand', { brandHref: '/', brandTitle: branding.name, brandShowTagline: true }) %>
         <p><%- String(footer.footer_about || 'GYC Sierra Leone').replace(/\n/g, '<br />') %></p>
         <div class="d-flex gap-2 social-row">
           <span class="social-pill"><i class="bi bi-facebook"></i></span>

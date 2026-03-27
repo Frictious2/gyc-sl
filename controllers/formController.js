@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const Submission = require('../models/Submission');
+const mailService = require('../services/mailService');
 
 function handleValidation(req, res, redirectPath) {
   const errors = validationResult(req);
@@ -21,15 +22,52 @@ exports.contact = async (req, res, next) => {
       return;
     }
 
-    await Submission.create('contact', {
+    const payload = {
       full_name: req.body.full_name,
       email: req.body.email,
       phone: req.body.phone || null,
       subject: req.body.subject || null,
       message: req.body.message
+    };
+
+    const normalizedFingerprint = `${payload.email}|${payload.subject || ''}|${payload.message}`.trim().toLowerCase();
+
+    const duplicateWindowMs = 10 * 60 * 1000;
+    const lastSubmittedAt = Number(req.session.lastContactSubmittedAt || 0);
+    const isSameRecentSubmission =
+      req.session.lastContactFingerprint === normalizedFingerprint &&
+      lastSubmittedAt &&
+      Date.now() - lastSubmittedAt < duplicateWindowMs;
+
+    if (isSameRecentSubmission) {
+      req.flash('error', 'This message was already submitted. Please wait before sending it again.');
+      req.session.oldInput = { ...req.body };
+      return res.redirect('/contact');
+    }
+
+    const duplicateMessages = await Submission.findRecentDuplicateContact(payload);
+    if (duplicateMessages.length) {
+      req.flash('error', 'A very similar message was sent recently. Please wait for a reply before sending it again.');
+      req.session.oldInput = { ...req.body };
+      return res.redirect('/contact');
+    }
+
+    await Submission.create('contact', payload);
+    req.session.lastContactFingerprint = normalizedFingerprint;
+    req.session.lastContactSubmittedAt = Date.now();
+
+    Promise.allSettled([
+      mailService.sendContactNotification(payload),
+      mailService.sendContactAutoReply(payload)
+    ]).then((results) => {
+      results
+        .filter((result) => result.status === 'rejected')
+        .forEach((result) => {
+          console.error('Contact email delivery failed:', result.reason);
+        });
     });
 
-    req.flash('success', 'Your message has been sent successfully.');
+    req.flash('success', 'Your message has been sent successfully. We have received your message and will get back to you.');
     req.session.oldInput = null;
     res.redirect('/contact');
   } catch (error) {

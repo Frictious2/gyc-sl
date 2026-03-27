@@ -1,5 +1,7 @@
 <aside class="admin-sidebar text-white p-4">
-  <a href="/admin" class="admin-brand d-block mb-4 text-white text-decoration-none">GYC Admin</a>
+  <div class="mb-4">
+    <%- include('../site-brand', { brandHref: '/admin', brandVariant: 'dark', brandCompact: true, brandTitle: branding.shortName, brandSubtitle: branding.adminName }) %>
+  </div>
   <nav class="nav flex-column gap-2">
     <a class="nav-link text-white" href="/admin">Dashboard</a>
     <a class="nav-link text-white" href="/admin/content">Content Modules</a>
