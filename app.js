@@ -7,6 +7,7 @@ const expressLayouts = require('express-ejs-layouts');
 const methodOverride = require('method-override');
 
 const { sessionConfig } = require('./config/database');
+const { sessionCookieName, getSessionCookieOptions } = require('./config/session');
 const viewHelpers = require('./middleware/viewHelpers');
 const publicRoutes = require('./routes/publicRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -29,17 +30,12 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
-    key: 'gycsl.sid',
+    key: sessionCookieName,
     secret: process.env.SESSION_SECRET || 'development-secret',
     resave: false,
     saveUninitialized: false,
     ...(sessionStore ? { store: sessionStore } : {}),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 8,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
-    }
+    cookie: getSessionCookieOptions()
   })
 );
 app.use(flash());

@@ -1,13 +1,17 @@
 module.exports = (req, res, next) => {
-  const formErrors = req.session.formErrors || {};
-  const oldInput = req.session.oldInput || {};
-  req.session.formErrors = null;
-  req.session.oldInput = null;
+  const session = req.session || null;
+  const formErrors = (session && session.formErrors) || {};
+  const oldInput = (session && session.oldInput) || {};
+
+  if (session) {
+    session.formErrors = null;
+    session.oldInput = null;
+  }
 
   res.locals.currentPath = req.path;
-  res.locals.adminUser = req.session.adminUser || null;
-  res.locals.successMessages = req.flash('success');
-  res.locals.errorMessages = req.flash('error');
+  res.locals.adminUser = (session && session.adminUser) || null;
+  res.locals.successMessages = typeof req.flash === 'function' ? req.flash('success') : [];
+  res.locals.errorMessages = typeof req.flash === 'function' ? req.flash('error') : [];
   res.locals.formErrors = formErrors;
   res.locals.oldInput = oldInput;
   res.locals.appName = process.env.APP_NAME || 'GYC Sierra Leone';

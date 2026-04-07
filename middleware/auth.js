@@ -1,5 +1,5 @@
 function requireAuth(req, res, next) {
-  if (!req.session.adminUser) {
+  if (!req.session || !req.session.adminUser) {
     req.flash('error', 'Please log in to continue.');
     return res.redirect('/admin/login');
   }
@@ -8,7 +8,7 @@ function requireAuth(req, res, next) {
 }
 
 function requireGuest(req, res, next) {
-  if (req.session.adminUser) {
+  if (req.session && req.session.adminUser) {
     return res.redirect('/admin');
   }
 
