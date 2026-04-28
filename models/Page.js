@@ -24,6 +24,17 @@ function sanitizeString(value, fallback = null) {
   return normalized === '' ? fallback : normalized;
 }
 
+function groupRowsBySection(rows) {
+  return rows.reduce((acc, row) => {
+    const key = row.section_id;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(row);
+    return acc;
+  }, {});
+}
+
 class Page extends BaseModel {
   static async all() {
     const columns = await SchemaInspector.getColumns('pages');
@@ -104,70 +115,74 @@ class Page extends BaseModel {
       sections = [];
     }
 
-    const enrichedSections = await Promise.all(
-      sections.map(async (section) => {
-        let items = [];
-        let media = [];
+    const sectionIds = sections
+      .map((section) => sanitizeInteger(section.id, 0))
+      .filter((idValue) => idValue > 0);
 
-        try {
-          items = await this.query(
-            `SELECT ${[
-              'id',
-              itemColumns.has('item_type') ? 'item_type' : "'card' AS item_type",
-              itemColumns.has('title') ? 'title' : 'NULL AS title',
-              itemColumns.has('subtitle') ? 'subtitle' : 'NULL AS subtitle',
-              itemColumns.has('body') ? 'body' : 'NULL AS body',
-              itemColumns.has('meta_json') ? 'meta_json' : 'NULL AS meta_json',
-              itemColumns.has('image_id') ? 'image_id' : 'NULL AS image_id',
-              itemColumns.has('link_label') ? 'link_label' : 'NULL AS link_label',
-              itemColumns.has('link_url') ? 'link_url' : 'NULL AS link_url',
-              itemColumns.has('status') ? 'status' : "'published' AS status",
-              itemColumns.has('is_published') ? 'is_published' : '1 AS is_published',
-              itemColumns.has('sort_order') ? 'sort_order' : '0 AS sort_order'
-            ].join(', ')}
-             FROM section_items
-             WHERE section_id = :sectionId
-               ${itemColumns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
-             ORDER BY ${itemColumns.has('sort_order') ? 'sort_order ASC,' : ''} id ASC`,
-            { sectionId: section.id }
-          );
-        } catch (error) {
-          editorWarnings.push(`Section items could not be loaded for "${section.section_key}": ${error.sqlMessage || error.message}`);
-          items = [];
-        }
+    let itemsBySection = {};
+    let mediaBySection = {};
 
-        try {
-          media = await this.query(
-            `SELECT ${[
-              'sm.id',
-              sectionMediaColumns.has('media_id') ? 'sm.media_id' : 'NULL AS media_id',
-              sectionMediaColumns.has('media_role') ? 'sm.media_role' : "'gallery' AS media_role",
-              sectionMediaColumns.has('caption') ? 'sm.caption' : 'NULL AS caption',
-              sectionMediaColumns.has('alt_text') ? 'sm.alt_text' : 'NULL AS alt_text',
-              sectionMediaColumns.has('sort_order') ? 'sm.sort_order' : '0 AS sort_order',
-              mediaColumns.has('file_path') ? 'ml.file_path' : 'NULL AS file_path',
-              mediaColumns.has('title') ? 'ml.title AS media_title' : "NULL AS media_title",
-              mediaColumns.has('file_name') ? 'ml.file_name AS media_file_name' : "NULL AS media_file_name"
-            ].join(', ')}
-             FROM section_media sm
-             LEFT JOIN media_library ml ON ml.id = sm.media_id ${mediaColumns.has('deleted_at') ? 'AND ml.deleted_at IS NULL' : ''}
-             WHERE sm.section_id = :sectionId
-               ${sectionMediaColumns.has('deleted_at') ? 'AND sm.deleted_at IS NULL' : ''}
-             ORDER BY ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`,
-            { sectionId: section.id }
-          );
-        } catch (error) {
-          editorWarnings.push(`Section media could not be loaded for "${section.section_key}": ${error.sqlMessage || error.message}`);
-          media = [];
-        }
+    if (sectionIds.length) {
+      const sectionIdList = sectionIds.join(', ');
 
-        return {
-          ...section,
-          items: Array.isArray(items) ? items : [],
-          media: Array.isArray(media) ? media : []
-        };
-      })
-    );
+      try {
+        const items = await this.query(
+          `SELECT ${[
+            'section_id',
+            'id',
+            itemColumns.has('item_type') ? 'item_type' : "'card' AS item_type",
+            itemColumns.has('title') ? 'title' : 'NULL AS title',
+            itemColumns.has('subtitle') ? 'subtitle' : 'NULL AS subtitle',
+            itemColumns.has('body') ? 'body' : 'NULL AS body',
+            itemColumns.has('meta_json') ? 'meta_json' : 'NULL AS meta_json',
+            itemColumns.has('image_id') ? 'image_id' : 'NULL AS image_id',
+            itemColumns.has('link_label') ? 'link_label' : 'NULL AS link_label',
+            itemColumns.has('link_url') ? 'link_url' : 'NULL AS link_url',
+            itemColumns.has('status') ? 'status' : "'published' AS status",
+            itemColumns.has('is_published') ? 'is_published' : '1 AS is_published',
+            itemColumns.has('sort_order') ? 'sort_order' : '0 AS sort_order'
+          ].join(', ')}
+           FROM section_items
+           WHERE section_id IN (${sectionIdList})
+             ${itemColumns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
+           ORDER BY section_id ASC, ${itemColumns.has('sort_order') ? 'sort_order ASC,' : ''} id ASC`
+        );
+        itemsBySection = groupRowsBySection(Array.isArray(items) ? items : []);
+      } catch (error) {
+        editorWarnings.push(`Section items could not be loaded for this page: ${error.sqlMessage || error.message}`);
+      }
+
+      try {
+        const mediaRows = await this.query(
+          `SELECT ${[
+            'sm.section_id',
+            'sm.id',
+            sectionMediaColumns.has('media_id') ? 'sm.media_id' : 'NULL AS media_id',
+            sectionMediaColumns.has('media_role') ? 'sm.media_role' : "'gallery' AS media_role",
+            sectionMediaColumns.has('caption') ? 'sm.caption' : 'NULL AS caption',
+            sectionMediaColumns.has('alt_text') ? 'sm.alt_text' : 'NULL AS alt_text',
+            sectionMediaColumns.has('sort_order') ? 'sm.sort_order' : '0 AS sort_order',
+            mediaColumns.has('file_path') ? 'ml.file_path' : 'NULL AS file_path',
+            mediaColumns.has('title') ? 'ml.title AS media_title' : "NULL AS media_title",
+            mediaColumns.has('file_name') ? 'ml.file_name AS media_file_name' : "NULL AS media_file_name"
+          ].join(', ')}
+           FROM section_media sm
+           LEFT JOIN media_library ml ON ml.id = sm.media_id ${mediaColumns.has('deleted_at') ? 'AND ml.deleted_at IS NULL' : ''}
+           WHERE sm.section_id IN (${sectionIdList})
+             ${sectionMediaColumns.has('deleted_at') ? 'AND sm.deleted_at IS NULL' : ''}
+           ORDER BY sm.section_id ASC, ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`
+        );
+        mediaBySection = groupRowsBySection(Array.isArray(mediaRows) ? mediaRows : []);
+      } catch (error) {
+        editorWarnings.push(`Section media could not be loaded for this page: ${error.sqlMessage || error.message}`);
+      }
+    }
+
+    const enrichedSections = sections.map((section) => ({
+      ...section,
+      items: Array.isArray(itemsBySection[section.id]) ? itemsBySection[section.id] : [],
+      media: Array.isArray(mediaBySection[section.id]) ? mediaBySection[section.id] : []
+    }));
 
     return {
       ...pages[0],
