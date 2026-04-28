@@ -48,6 +48,7 @@ class Page extends BaseModel {
       SchemaInspector.getColumns('section_media'),
       SchemaInspector.getColumns('media_library')
     ]);
+    const editorWarnings = [];
 
     const pages = await this.query(
       `SELECT ${[
@@ -73,34 +74,43 @@ class Page extends BaseModel {
       return null;
     }
 
-    const sections = await this.query(
-      `SELECT ${[
-        'id',
-        sectionColumns.has('section_key') ? 'section_key' : "CONCAT('section-', id) AS section_key",
-        sectionColumns.has('title') ? 'title' : 'NULL AS title',
-        sectionColumns.has('subtitle') ? 'subtitle' : 'NULL AS subtitle',
-        sectionColumns.has('body') ? 'body' : 'NULL AS body',
-        sectionColumns.has('image_id') ? 'image_id' : 'NULL AS image_id',
-        sectionColumns.has('cta_label') ? 'cta_label' : 'NULL AS cta_label',
-        sectionColumns.has('cta_link') ? 'cta_link' : 'NULL AS cta_link',
-        sectionColumns.has('secondary_cta_label') ? 'secondary_cta_label' : 'NULL AS secondary_cta_label',
-        sectionColumns.has('secondary_cta_link') ? 'secondary_cta_link' : 'NULL AS secondary_cta_link',
-        sectionColumns.has('layout_style') ? 'layout_style' : 'NULL AS layout_style',
-        sectionColumns.has('status') ? 'status' : "'published' AS status",
-        sectionColumns.has('is_published') ? 'is_published' : '1 AS is_published',
-        sectionColumns.has('sort_order') ? 'sort_order' : '0 AS sort_order'
-      ].join(', ')}
-       FROM page_sections
-       WHERE page_id = :id
-         ${sectionColumns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
-       ORDER BY ${sectionColumns.has('sort_order') ? 'sort_order ASC,' : ''} id ASC`,
-      { id }
-    );
+    let sections = [];
+    try {
+      sections = await this.query(
+        `SELECT ${[
+          'id',
+          sectionColumns.has('section_key') ? 'section_key' : "CONCAT('section-', id) AS section_key",
+          sectionColumns.has('title') ? 'title' : 'NULL AS title',
+          sectionColumns.has('subtitle') ? 'subtitle' : 'NULL AS subtitle',
+          sectionColumns.has('body') ? 'body' : 'NULL AS body',
+          sectionColumns.has('image_id') ? 'image_id' : 'NULL AS image_id',
+          sectionColumns.has('cta_label') ? 'cta_label' : 'NULL AS cta_label',
+          sectionColumns.has('cta_link') ? 'cta_link' : 'NULL AS cta_link',
+          sectionColumns.has('secondary_cta_label') ? 'secondary_cta_label' : 'NULL AS secondary_cta_label',
+          sectionColumns.has('secondary_cta_link') ? 'secondary_cta_link' : 'NULL AS secondary_cta_link',
+          sectionColumns.has('layout_style') ? 'layout_style' : 'NULL AS layout_style',
+          sectionColumns.has('status') ? 'status' : "'published' AS status",
+          sectionColumns.has('is_published') ? 'is_published' : '1 AS is_published',
+          sectionColumns.has('sort_order') ? 'sort_order' : '0 AS sort_order'
+        ].join(', ')}
+         FROM page_sections
+         WHERE page_id = :id
+           ${sectionColumns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
+         ORDER BY ${sectionColumns.has('sort_order') ? 'sort_order ASC,' : ''} id ASC`,
+        { id }
+      );
+    } catch (error) {
+      editorWarnings.push(`Sections could not be loaded for this page: ${error.sqlMessage || error.message}`);
+      sections = [];
+    }
 
     const enrichedSections = await Promise.all(
       sections.map(async (section) => {
-        const [items, media] = await Promise.all([
-          this.query(
+        let items = [];
+        let media = [];
+
+        try {
+          items = await this.query(
             `SELECT ${[
               'id',
               itemColumns.has('item_type') ? 'item_type' : "'card' AS item_type",
@@ -120,8 +130,14 @@ class Page extends BaseModel {
                ${itemColumns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
              ORDER BY ${itemColumns.has('sort_order') ? 'sort_order ASC,' : ''} id ASC`,
             { sectionId: section.id }
-          ),
-          this.query(
+          );
+        } catch (error) {
+          editorWarnings.push(`Section items could not be loaded for "${section.section_key}": ${error.sqlMessage || error.message}`);
+          items = [];
+        }
+
+        try {
+          media = await this.query(
             `SELECT ${[
               'sm.id',
               sectionMediaColumns.has('media_id') ? 'sm.media_id' : 'NULL AS media_id',
@@ -139,8 +155,11 @@ class Page extends BaseModel {
                ${sectionMediaColumns.has('deleted_at') ? 'AND sm.deleted_at IS NULL' : ''}
              ORDER BY ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`,
             { sectionId: section.id }
-          )
-        ]);
+          );
+        } catch (error) {
+          editorWarnings.push(`Section media could not be loaded for "${section.section_key}": ${error.sqlMessage || error.message}`);
+          media = [];
+        }
 
         return {
           ...section,
@@ -152,7 +171,8 @@ class Page extends BaseModel {
 
     return {
       ...pages[0],
-      sections: Array.isArray(enrichedSections) ? enrichedSections : []
+      sections: Array.isArray(enrichedSections) ? enrichedSections : [],
+      editorWarnings
     };
   }
 

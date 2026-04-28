@@ -3,7 +3,19 @@
   const pageData = page || {};
   const pageSections = Array.isArray(pageData.sections) ? pageData.sections : [];
   const mediaList = Array.isArray(mediaItems) ? mediaItems : [];
+  const editorWarnings = Array.isArray(pageData.editorWarnings) ? pageData.editorWarnings : [];
 %>
+
+<% if (editorWarnings.length) { %>
+  <div class="alert alert-warning">
+    <strong>Some editor data could not be loaded cleanly.</strong>
+    <ul class="mb-0 mt-2">
+      <% editorWarnings.forEach((warning) => { %>
+        <li><%= warning %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
 
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-body">
