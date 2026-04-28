@@ -1,3 +1,4 @@
+<% const pageList = Array.isArray(pages) ? pages : []; %>
 <div class="card border-0 shadow-sm">
   <div class="card-body">
     <h2 class="h5">Editable pages and sections</h2>
@@ -14,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <% pages.forEach((page) => { %>
+          <% pageList.forEach((page) => { %>
             <tr>
               <td><%= page.id %></td>
               <td><%= page.title %></td>
@@ -23,6 +24,9 @@
               <td><a href="/admin/pages/<%= page.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit page</a></td>
             </tr>
           <% }) %>
+          <% if (!pageList.length) { %>
+            <tr><td colspan="5" class="text-muted">No CMS pages were found. Seed pages or run the page editor migration before editing content.</td></tr>
+          <% } %>
         </tbody>
       </table>
     </div>

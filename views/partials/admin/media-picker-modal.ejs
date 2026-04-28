@@ -1,3 +1,4 @@
+<% const mediaList = Array.isArray(mediaItems) ? mediaItems : []; %>
 <div class="modal fade" id="mediaPickerModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -6,19 +7,26 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <% if (!mediaList.length) { %>
+          <div class="alert alert-warning mb-0">The media library is empty. Upload media first, then return here to attach assets.</div>
+        <% } else { %>
         <div class="row g-3">
-          <% mediaItems.forEach((media) => { %>
+          <% mediaList.forEach((media) => { %>
             <div class="col-md-4 col-xl-3">
               <button
                 class="btn w-100 text-start p-0 border-0 media-picker-option"
                 type="button"
                 data-media-id="<%= media.id %>"
-                data-media-label="<%= media.title || media.file_name %>"
+                data-media-label="<%= media.title || media.file_name || `Media #${media.id}` %>"
               >
                 <div class="card border-0 shadow-sm h-100">
-                  <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name %>" class="card-img-top media-thumb" />
+                  <% if (media.file_path) { %>
+                    <img src="<%= media.file_path %>" alt="<%= media.alt_text || media.title || media.file_name || `Media #${media.id}` %>" class="card-img-top media-thumb" />
+                  <% } else { %>
+                    <div class="media-thumb d-flex align-items-center justify-content-center text-muted small px-3">Missing media preview</div>
+                  <% } %>
                   <div class="card-body">
-                    <h6 class="mb-1"><%= media.title || media.file_name %></h6>
+                    <h6 class="mb-1"><%= media.title || media.file_name || `Media #${media.id}` %></h6>
                     <p class="small text-muted mb-0">ID: <%= media.id %></p>
                   </div>
                 </div>
@@ -26,6 +34,7 @@
             </div>
           <% }) %>
         </div>
+        <% } %>
       </div>
     </div>
   </div>

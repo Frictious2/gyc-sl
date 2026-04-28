@@ -1,12 +1,32 @@
 const BaseModel = require('./BaseModel');
+const SchemaInspector = require('./SchemaInspector');
 
 class Media extends BaseModel {
-  static all() {
+  static async all() {
+    const columns = await SchemaInspector.getColumns('media_library');
+    const selectParts = ['id'];
+
+    if (columns.has('title')) selectParts.push('title');
+    if (columns.has('file_name')) selectParts.push('file_name');
+    if (columns.has('file_path')) selectParts.push('file_path');
+    if (columns.has('mime_type')) selectParts.push('mime_type');
+    if (columns.has('alt_text')) selectParts.push('alt_text');
+    if (columns.has('file_size')) selectParts.push('file_size');
+    if (columns.has('created_at')) selectParts.push('created_at');
+
+    const whereParts = [];
+    if (columns.has('deleted_at')) {
+      whereParts.push('deleted_at IS NULL');
+    }
+    if (columns.has('status')) {
+      whereParts.push("status = 'active'");
+    }
+
     return this.query(
-      `SELECT id, title, file_name, file_path, mime_type, alt_text, file_size, created_at
+      `SELECT ${selectParts.join(', ')}
        FROM media_library
-       WHERE deleted_at IS NULL AND status = 'active'
-       ORDER BY created_at DESC, id DESC`
+       ${whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : ''}
+       ORDER BY ${columns.has('created_at') ? 'created_at DESC,' : ''} id DESC`
     );
   }
 

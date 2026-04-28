@@ -1,18 +1,34 @@
 const BaseModel = require('./BaseModel');
+const SchemaInspector = require('./SchemaInspector');
 
 class PublicSite extends BaseModel {
   static async getPageByRoute(routePath) {
+    const [pageColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('pages'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
     const pages = await this.query(
-      `SELECT p.id, p.title, p.slug, p.route_path, p.page_type, p.hero_title, p.hero_subtitle,
-              p.hero_image_id, p.status, p.is_published,
-              hero_media.file_path AS hero_image_path,
-              hero_media.alt_text AS hero_image_alt
+      `SELECT ${[
+        'p.id',
+        'p.title',
+        pageColumns.has('slug') ? 'p.slug' : "'' AS slug",
+        pageColumns.has('route_path') ? 'p.route_path' : "'' AS route_path",
+        pageColumns.has('page_type') ? 'p.page_type' : "'standard' AS page_type",
+        pageColumns.has('hero_title') ? 'p.hero_title' : 'NULL AS hero_title',
+        pageColumns.has('hero_subtitle') ? 'p.hero_subtitle' : 'NULL AS hero_subtitle',
+        pageColumns.has('hero_image_id') ? 'p.hero_image_id' : 'NULL AS hero_image_id',
+        pageColumns.has('status') ? 'p.status' : "'published' AS status",
+        pageColumns.has('is_published') ? 'p.is_published' : '1 AS is_published',
+        mediaColumns.has('file_path') ? 'hero_media.file_path AS hero_image_path' : 'NULL AS hero_image_path',
+        mediaColumns.has('alt_text') ? 'hero_media.alt_text AS hero_image_alt' : 'NULL AS hero_image_alt'
+      ].join(', ')}
        FROM pages p
-       LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id
+       LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id ${mediaColumns.has('deleted_at') ? 'AND hero_media.deleted_at IS NULL' : ''}
        WHERE p.route_path = :routePath
-         AND p.deleted_at IS NULL
-         AND p.is_published = 1
-         AND p.status = 'published'
+         ${pageColumns.has('deleted_at') ? 'AND p.deleted_at IS NULL' : ''}
+         ${pageColumns.has('is_published') ? 'AND p.is_published = 1' : ''}
+         ${pageColumns.has('status') ? "AND p.status = 'published'" : ''}
        LIMIT 1`,
       { routePath }
     );
@@ -21,47 +37,93 @@ class PublicSite extends BaseModel {
   }
 
   static async getSectionsByPageId(pageId) {
+    const [sectionColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('page_sections'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
     return this.query(
-      `SELECT ps.id, ps.section_key, ps.title, ps.subtitle, ps.body, ps.image_id,
-              ps.cta_label, ps.cta_link, ps.secondary_cta_label, ps.secondary_cta_link,
-              ps.layout_style, ps.is_published, ps.sort_order,
-              media.file_path AS image_path,
-              media.alt_text AS image_alt
+      `SELECT ${[
+        'ps.id',
+        sectionColumns.has('section_key') ? 'ps.section_key' : "CONCAT('section-', ps.id) AS section_key",
+        sectionColumns.has('title') ? 'ps.title' : 'NULL AS title',
+        sectionColumns.has('subtitle') ? 'ps.subtitle' : 'NULL AS subtitle',
+        sectionColumns.has('body') ? 'ps.body' : 'NULL AS body',
+        sectionColumns.has('image_id') ? 'ps.image_id' : 'NULL AS image_id',
+        sectionColumns.has('cta_label') ? 'ps.cta_label' : 'NULL AS cta_label',
+        sectionColumns.has('cta_link') ? 'ps.cta_link' : 'NULL AS cta_link',
+        sectionColumns.has('secondary_cta_label') ? 'ps.secondary_cta_label' : 'NULL AS secondary_cta_label',
+        sectionColumns.has('secondary_cta_link') ? 'ps.secondary_cta_link' : 'NULL AS secondary_cta_link',
+        sectionColumns.has('layout_style') ? 'ps.layout_style' : 'NULL AS layout_style',
+        sectionColumns.has('is_published') ? 'ps.is_published' : '1 AS is_published',
+        sectionColumns.has('sort_order') ? 'ps.sort_order' : '0 AS sort_order',
+        mediaColumns.has('file_path') ? 'media.file_path AS image_path' : 'NULL AS image_path',
+        mediaColumns.has('alt_text') ? 'media.alt_text AS image_alt' : 'NULL AS image_alt'
+      ].join(', ')}
        FROM page_sections ps
-       LEFT JOIN media_library media ON media.id = ps.image_id
+       LEFT JOIN media_library media ON media.id = ps.image_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
        WHERE ps.page_id = :pageId
-         AND ps.deleted_at IS NULL
-         AND ps.is_published = 1
-         AND ps.status = 'published'
-       ORDER BY ps.sort_order ASC, ps.id ASC`,
+         ${sectionColumns.has('deleted_at') ? 'AND ps.deleted_at IS NULL' : ''}
+         ${sectionColumns.has('is_published') ? 'AND ps.is_published = 1' : ''}
+         ${sectionColumns.has('status') ? "AND ps.status = 'published'" : ''}
+       ORDER BY ${sectionColumns.has('sort_order') ? 'ps.sort_order ASC,' : ''} ps.id ASC`,
       { pageId }
     );
   }
 
   static async getSectionItems(sectionId) {
+    const [itemColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('section_items'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
     return this.query(
-      `SELECT si.id, si.item_type, si.title, si.subtitle, si.body, si.meta_json, si.link_label,
-              si.link_url, si.sort_order, media.file_path AS image_path, media.alt_text AS image_alt
+      `SELECT ${[
+        'si.id',
+        itemColumns.has('item_type') ? 'si.item_type' : "'card' AS item_type",
+        itemColumns.has('title') ? 'si.title' : 'NULL AS title',
+        itemColumns.has('subtitle') ? 'si.subtitle' : 'NULL AS subtitle',
+        itemColumns.has('body') ? 'si.body' : 'NULL AS body',
+        itemColumns.has('meta_json') ? 'si.meta_json' : 'NULL AS meta_json',
+        itemColumns.has('link_label') ? 'si.link_label' : 'NULL AS link_label',
+        itemColumns.has('link_url') ? 'si.link_url' : 'NULL AS link_url',
+        itemColumns.has('sort_order') ? 'si.sort_order' : '0 AS sort_order',
+        mediaColumns.has('file_path') ? 'media.file_path AS image_path' : 'NULL AS image_path',
+        mediaColumns.has('alt_text') ? 'media.alt_text AS image_alt' : 'NULL AS image_alt'
+      ].join(', ')}
        FROM section_items si
-       LEFT JOIN media_library media ON media.id = si.image_id
+       LEFT JOIN media_library media ON media.id = si.image_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
        WHERE si.section_id = :sectionId
-         AND si.deleted_at IS NULL
-         AND si.is_published = 1
-         AND si.status = 'published'
-       ORDER BY si.sort_order ASC, si.id ASC`,
+         ${itemColumns.has('deleted_at') ? 'AND si.deleted_at IS NULL' : ''}
+         ${itemColumns.has('is_published') ? 'AND si.is_published = 1' : ''}
+         ${itemColumns.has('status') ? "AND si.status = 'published'" : ''}
+       ORDER BY ${itemColumns.has('sort_order') ? 'si.sort_order ASC,' : ''} si.id ASC`,
       { sectionId }
     );
   }
 
   static async getSectionMedia(sectionId) {
+    const [sectionMediaColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('section_media'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
     return this.query(
-      `SELECT sm.id, sm.media_role, sm.caption, sm.alt_text, sm.sort_order,
-              media.file_path, media.alt_text AS media_alt, media.title
+      `SELECT ${[
+        'sm.id',
+        sectionMediaColumns.has('media_role') ? 'sm.media_role' : "'gallery' AS media_role",
+        sectionMediaColumns.has('caption') ? 'sm.caption' : 'NULL AS caption',
+        sectionMediaColumns.has('alt_text') ? 'sm.alt_text' : 'NULL AS alt_text',
+        sectionMediaColumns.has('sort_order') ? 'sm.sort_order' : '0 AS sort_order',
+        mediaColumns.has('file_path') ? 'media.file_path' : 'NULL AS file_path',
+        mediaColumns.has('alt_text') ? 'media.alt_text AS media_alt' : 'NULL AS media_alt',
+        mediaColumns.has('title') ? 'media.title' : 'NULL AS title'
+      ].join(', ')}
        FROM section_media sm
-       INNER JOIN media_library media ON media.id = sm.media_id
+       LEFT JOIN media_library media ON media.id = sm.media_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
        WHERE sm.section_id = :sectionId
-         AND sm.deleted_at IS NULL
-       ORDER BY sm.sort_order ASC, sm.id ASC`,
+         ${sectionMediaColumns.has('deleted_at') ? 'AND sm.deleted_at IS NULL' : ''}
+       ORDER BY ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`,
       { sectionId }
     );
   }
@@ -219,24 +281,37 @@ class PublicSite extends BaseModel {
   }
 
   static async getSettingsByGroup(settingGroup) {
+    const columns = await SchemaInspector.getColumns('site_settings');
     return this.query(
       `SELECT setting_key, setting_value
        FROM site_settings
        WHERE setting_group = :settingGroup
-         AND deleted_at IS NULL
-         AND status = 'active'`,
+         ${columns.has('deleted_at') ? 'AND deleted_at IS NULL' : ''}
+         ${columns.has('status') ? "AND status = 'active'" : ''}`,
       { settingGroup }
     );
   }
 
   static async getSeoByRoute(routePath) {
+    const [seoColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('seo_meta'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
     const rows = await this.query(
-      `SELECT meta_title, meta_description, meta_keywords, og_title, og_description, canonical_url,
-              media.file_path AS og_image_path
+      `SELECT ${[
+        seoColumns.has('meta_title') ? 'meta_title' : "'' AS meta_title",
+        seoColumns.has('meta_description') ? 'meta_description' : 'NULL AS meta_description',
+        seoColumns.has('meta_keywords') ? 'meta_keywords' : 'NULL AS meta_keywords',
+        seoColumns.has('og_title') ? 'og_title' : 'NULL AS og_title',
+        seoColumns.has('og_description') ? 'og_description' : 'NULL AS og_description',
+        seoColumns.has('canonical_url') ? 'canonical_url' : 'NULL AS canonical_url',
+        mediaColumns.has('file_path') ? 'media.file_path AS og_image_path' : 'NULL AS og_image_path'
+      ].join(', ')}
        FROM seo_meta s
-       LEFT JOIN media_library media ON media.id = s.og_image_id
+       LEFT JOIN media_library media ON media.id = s.og_image_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
        WHERE s.route_path = :routePath
-         AND s.deleted_at IS NULL
+         ${seoColumns.has('deleted_at') ? 'AND s.deleted_at IS NULL' : ''}
        LIMIT 1`,
       { routePath }
     );

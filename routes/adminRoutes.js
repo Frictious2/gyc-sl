@@ -8,6 +8,7 @@ const mediaController = require('../controllers/admin/mediaController');
 const moduleController = require('../controllers/admin/moduleController');
 const seoController = require('../controllers/admin/seoController');
 const submissionController = require('../controllers/admin/submissionController');
+const schemaHealthController = require('../controllers/admin/schemaHealthController');
 const { requireAuth, requireGuest } = require('../middleware/auth');
 const upload = require('../config/upload');
 
@@ -19,6 +20,7 @@ router.post('/logout', requireAuth, authController.logout);
 
 router.get('/', requireAuth, dashboardController.index);
 router.get('/content', requireAuth, contentController.index);
+router.get('/schema-health', requireAuth, schemaHealthController.index);
 router.get('/pages', requireAuth, pageController.index);
 router.get('/pages/:id/edit', requireAuth, pageController.edit);
 router.post('/pages/:id', requireAuth, pageController.update);

@@ -11,7 +11,8 @@ const modules = [
   { slug: 'districts', label: 'District Coordinators' },
   { slug: 'footer', label: 'Contact & Footer Block' },
   { slug: 'seo', label: 'SEO Metadata' },
-  { slug: 'media', label: 'Media Library' }
+  { slug: 'media', label: 'Media Library' },
+  { slug: 'schema-health', label: 'Schema Health Check' }
 ];
 
 exports.index = (req, res) => {

@@ -1,0 +1,130 @@
+<%- include('../../partials/flash-messages') %>
+
+<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+  <div>
+    <h2 class="h4 mb-1">Schema Health Check</h2>
+    <p class="text-muted mb-0">Checks the production-critical CMS schema and common data integrity issues for page editing.</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <span class="health-pill <%= report.healthy ? 'is-ok' : 'is-error' %>">
+      <%= report.healthy ? 'Healthy' : 'Needs Attention' %>
+    </span>
+    <span class="health-pill">
+      DB: <%= report.databaseName %>
+    </span>
+    <span class="health-pill">
+      Checked: <%= new Date(report.checkedAt).toLocaleString('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) %>
+    </span>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <span class="text-muted">Healthy tables</span>
+      <strong><%= report.summary.healthyTables %></strong>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <span class="text-muted">Failing tables</span>
+      <strong><%= report.summary.failingTables %></strong>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="admin-stat-card">
+      <span class="text-muted">Connection</span>
+      <strong><%= report.connectionOk ? 'OK' : 'Failed' %></strong>
+    </div>
+  </div>
+</div>
+
+<% if (!report.connectionOk) { %>
+  <div class="alert alert-danger">
+    <strong>Database connection failed.</strong>
+    <div class="small mt-2">Message: <%= report.error?.message || 'Unknown error' %></div>
+    <% if (report.error?.code) { %><div class="small">Code: <%= report.error.code %></div><% } %>
+  </div>
+<% } else { %>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="h5 mb-0">Required Tables & Columns</h3>
+        <span class="text-muted small">Safe to compare against production after deployment</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Status</th>
+              <th>Missing Columns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% report.tableReports.forEach((tableReport) => { %>
+              <tr>
+                <td><code><%= tableReport.table %></code></td>
+                <td>
+                  <span class="health-pill <%= tableReport.healthy ? 'is-ok' : 'is-error' %>">
+                    <%= tableReport.healthy ? 'OK' : (tableReport.exists ? 'Missing Columns' : 'Missing Table') %>
+                  </span>
+                </td>
+                <td>
+                  <% if (!tableReport.missingColumns.length) { %>
+                    <span class="text-muted">None</span>
+                  <% } else { %>
+                    <div class="d-flex flex-wrap gap-2">
+                      <% tableReport.missingColumns.forEach((column) => { %>
+                        <span class="health-chip"><%= column %></span>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Integrity Checks</h3>
+      <div class="row g-3">
+        <% report.integrityChecks.forEach((check) => { %>
+          <div class="col-md-6">
+            <div class="border rounded-4 p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                <h4 class="h6 mb-0"><%= check.label %></h4>
+                <span class="health-pill <%= check.status === 'ok' ? 'is-ok' : (check.status === 'warn' ? 'is-warn' : 'is-error') %>">
+                  <%= check.status.toUpperCase() %>
+                </span>
+              </div>
+              <p class="text-muted mb-0"><%= check.detail %></p>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Recommended Action</h3>
+      <% if (report.healthy) { %>
+        <p class="mb-0">The page editor schema looks healthy. If editors still hit errors, capture the exact production stack trace and compare the affected page data or media records.</p>
+      <% } else { %>
+        <p class="mb-2">Run the page editor migration on the production server:</p>
+        <pre class="admin-code-block mb-0"><code>npm run db:migrate:page-editor</code></pre>
+      <% } %>
+    </div>
+  </div>
+<% } %>

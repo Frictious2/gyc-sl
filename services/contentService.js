@@ -8,6 +8,20 @@ function splitSemi(text = '') {
     .filter(Boolean);
 }
 
+function safeParseArray(value, contextLabel) {
+  if (!value) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn(`[contentService] Invalid JSON for ${contextLabel}. Falling back to an empty array.`);
+    return [];
+  }
+}
+
 function mapSettings(rows) {
   const values = {};
   rows.forEach((row) => {
@@ -208,7 +222,7 @@ exports.getHomeContent = async () => {
 
   return {
     page,
-    stats: statsSection ? JSON.parse(statsSection.body || '[]') : [],
+    stats: statsSection ? safeParseArray(statsSection.body, 'home impact statistics') : [],
     aboutSection,
     featuredSection,
     finalCta,

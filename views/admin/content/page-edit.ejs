@@ -1,27 +1,32 @@
 <%- include('../../partials/flash-messages') %>
+<%
+  const pageData = page || {};
+  const pageSections = Array.isArray(pageData.sections) ? pageData.sections : [];
+  const mediaList = Array.isArray(mediaItems) ? mediaItems : [];
+%>
 
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h2 class="h5 mb-1">Page settings</h2>
-        <p class="text-muted mb-0"><code><%= page.route_path %></code></p>
+        <p class="text-muted mb-0"><code><%= pageData.route_path || pageData.slug || 'Unknown route' %></code></p>
       </div>
       <a href="/admin/pages" class="btn btn-outline-secondary btn-sm">Back to pages</a>
     </div>
 
-    <form action="/admin/pages/<%= page.id %>" method="post" class="row g-3">
+    <form action="/admin/pages/<%= pageData.id %>" method="post" class="row g-3">
       <div class="col-md-6">
         <label class="form-label">Page title</label>
-        <input class="form-control" name="title" value="<%= page.title %>" />
+        <input class="form-control" name="title" value="<%= pageData.title || '' %>" />
       </div>
       <div class="col-md-6">
         <label class="form-label">Hero image</label>
         <div class="d-flex gap-2">
           <select class="form-select" id="hero_image_id" name="hero_image_id">
             <option value="">No image selected</option>
-            <% mediaItems.forEach((media) => { %>
-              <option value="<%= media.id %>" <%= String(page.hero_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+            <% mediaList.forEach((media) => { %>
+              <option value="<%= media.id %>" <%= String(pageData.hero_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name || `Media #${media.id}` %></option>
             <% }) %>
           </select>
           <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="hero_image_id">Pick</button>
@@ -29,23 +34,23 @@
       </div>
       <div class="col-12">
         <label class="form-label">Hero title</label>
-        <input class="form-control" name="hero_title" value="<%= page.hero_title || '' %>" />
+        <input class="form-control" name="hero_title" value="<%= pageData.hero_title || '' %>" />
       </div>
       <div class="col-12">
         <label class="form-label">Hero subtitle</label>
-        <textarea class="form-control" name="hero_subtitle" rows="3"><%= page.hero_subtitle || '' %></textarea>
+        <textarea class="form-control" name="hero_subtitle" rows="3"><%= pageData.hero_subtitle || '' %></textarea>
       </div>
       <div class="col-md-4">
         <label class="form-label">Status</label>
         <select class="form-select" name="status">
-          <option value="published" <%= page.status === 'published' ? 'selected' : '' %>>Published</option>
-          <option value="draft" <%= page.status === 'draft' ? 'selected' : '' %>>Draft</option>
-          <option value="archived" <%= page.status === 'archived' ? 'selected' : '' %>>Archived</option>
+          <option value="published" <%= pageData.status === 'published' ? 'selected' : '' %>>Published</option>
+          <option value="draft" <%= pageData.status === 'draft' ? 'selected' : '' %>>Draft</option>
+          <option value="archived" <%= pageData.status === 'archived' ? 'selected' : '' %>>Archived</option>
         </select>
       </div>
       <div class="col-md-4 d-flex align-items-end">
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" name="is_published" id="pagePublished" <%= page.is_published ? 'checked' : '' %> />
+          <input class="form-check-input" type="checkbox" name="is_published" id="pagePublished" <%= pageData.is_published ? 'checked' : '' %> />
           <label class="form-check-label" for="pagePublished">Publish page</label>
         </div>
       </div>
@@ -57,7 +62,15 @@
 </div>
 
 <div class="row g-4">
-  <% page.sections.forEach((section) => { %>
+  <% if (!pageSections.length) { %>
+    <div class="col-12">
+      <div class="alert alert-warning mb-0">No sections were found for this page. This usually means the production database is missing seeded page sections or the schema is out of date.</div>
+    </div>
+  <% } %>
+  <% pageSections.forEach((section) => { 
+    const sectionItems = Array.isArray(section.items) ? section.items : [];
+    const sectionMedia = Array.isArray(section.media) ? section.media : [];
+  %>
     <div class="col-12">
       <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -70,7 +83,7 @@
           </div>
 
           <form action="/admin/sections/<%= section.id %>" method="post" class="row g-3">
-            <input type="hidden" name="page_id" value="<%= page.id %>" />
+            <input type="hidden" name="page_id" value="<%= pageData.id %>" />
             <div class="col-md-6">
               <label class="form-label">Title</label>
               <input class="form-control" name="title" value="<%= section.title || '' %>" />
@@ -104,8 +117,8 @@
               <div class="d-flex gap-2">
                 <select class="form-select" id="section-image-<%= section.id %>" name="image_id">
                   <option value="">No image selected</option>
-                  <% mediaItems.forEach((media) => { %>
-                    <option value="<%= media.id %>" <%= String(section.image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name %></option>
+                  <% mediaList.forEach((media) => { %>
+                    <option value="<%= media.id %>" <%= String(section.image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name || `Media #${media.id}` %></option>
                   <% }) %>
                 </select>
                 <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="section-image-<%= section.id %>">Pick</button>
@@ -139,18 +152,18 @@
           <div class="row g-4">
             <div class="col-lg-6">
               <h4 class="h6 mb-3">Section Items</h4>
-              <% if (section.items && section.items.length) { %>
-                <% section.items.forEach((item) => { %>
+              <% if (sectionItems.length) { %>
+                <% sectionItems.forEach((item) => { %>
                   <div class="border rounded-4 p-3 mb-3">
                     <form action="/admin/section-items/<%= item.id %>" method="post" class="row g-2">
-                      <input type="hidden" name="page_id" value="<%= page.id %>" />
+                      <input type="hidden" name="page_id" value="<%= pageData.id %>" />
                       <div class="col-md-6">
                         <label class="form-label">Item type</label>
-                        <input class="form-control" name="item_type" value="<%= item.item_type %>" />
+                        <input class="form-control" name="item_type" value="<%= item.item_type || 'card' %>" />
                       </div>
                       <div class="col-md-6">
                         <label class="form-label">Sort order</label>
-                        <input class="form-control" type="number" name="sort_order" value="<%= item.sort_order %>" />
+                        <input class="form-control" type="number" name="sort_order" value="<%= item.sort_order || 0 %>" />
                       </div>
                       <div class="col-12">
                         <label class="form-label">Title</label>
@@ -177,14 +190,16 @@
                       </div>
                     </form>
                     <form action="/admin/section-items/<%= item.id %>/delete" method="post" class="mt-2">
-                      <input type="hidden" name="page_id" value="<%= page.id %>" />
+                      <input type="hidden" name="page_id" value="<%= pageData.id %>" />
                       <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
                     </form>
                   </div>
                 <% }) %>
+              <% } else { %>
+                <p class="text-muted small">No section items yet for this section.</p>
               <% } %>
               <form action="/admin/section-items" method="post" class="row g-2">
-                <input type="hidden" name="page_id" value="<%= page.id %>" />
+                <input type="hidden" name="page_id" value="<%= pageData.id %>" />
                 <input type="hidden" name="section_id" value="<%= section.id %>" />
                 <div class="col-md-6">
                   <label class="form-label">Item type</label>
@@ -211,8 +226,8 @@
                   <div class="d-flex gap-2">
                     <select class="form-select" id="section-item-image-<%= section.id %>" name="image_id">
                       <option value="">No image selected</option>
-                      <% mediaItems.forEach((media) => { %>
-                        <option value="<%= media.id %>"><%= media.title || media.file_name %></option>
+                      <% mediaList.forEach((media) => { %>
+                        <option value="<%= media.id %>"><%= media.title || media.file_name || `Media #${media.id}` %></option>
                       <% }) %>
                     </select>
                     <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="section-item-image-<%= section.id %>">Pick</button>
@@ -241,7 +256,7 @@
 
             <div class="col-lg-6">
               <h4 class="h6 mb-3">Section Media</h4>
-              <% if (section.media && section.media.length) { %>
+              <% if (sectionMedia.length) { %>
                 <div class="table-responsive mb-3">
                   <table class="table table-sm align-middle">
                     <thead>
@@ -252,13 +267,15 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <% section.media.forEach((mediaLink) => { %>
+                      <% sectionMedia.forEach((mediaLink) => { %>
                         <tr>
-                          <td><%= mediaLink.media_role %></td>
-                          <td><%= mediaLink.media_title %></td>
+                          <td><%= mediaLink.media_role || 'gallery' %></td>
+                          <td>
+                            <%= mediaLink.media_title || mediaLink.media_file_name || (mediaLink.media_id ? `Missing media #${mediaLink.media_id}` : 'Missing media record') %>
+                          </td>
                           <td>
                             <form action="/admin/section-media/<%= mediaLink.id %>/delete" method="post">
-                              <input type="hidden" name="page_id" value="<%= page.id %>" />
+                              <input type="hidden" name="page_id" value="<%= pageData.id %>" />
                               <button class="btn btn-outline-danger btn-sm" type="submit">Remove</button>
                             </form>
                           </td>
@@ -267,15 +284,18 @@
                     </tbody>
                   </table>
                 </div>
+              <% } else { %>
+                <p class="text-muted small">No media assets linked to this section yet.</p>
               <% } %>
               <form action="/admin/section-media" method="post" class="row g-2">
-                <input type="hidden" name="page_id" value="<%= page.id %>" />
+                <input type="hidden" name="page_id" value="<%= pageData.id %>" />
                 <input type="hidden" name="section_id" value="<%= section.id %>" />
                 <div class="col-md-6">
                   <label class="form-label">Media asset</label>
                   <select class="form-select" name="media_id">
-                    <% mediaItems.forEach((media) => { %>
-                      <option value="<%= media.id %>"><%= media.title || media.file_name %></option>
+                    <option value="">Select media</option>
+                    <% mediaList.forEach((media) => { %>
+                      <option value="<%= media.id %>"><%= media.title || media.file_name || `Media #${media.id}` %></option>
                     <% }) %>
                   </select>
                 </div>
@@ -312,4 +332,4 @@
   <% }) %>
 </div>
 
-<%- include('../../partials/admin/media-picker-modal', { mediaItems }) %>
+<%- include('../../partials/admin/media-picker-modal', { mediaItems: mediaList }) %>
