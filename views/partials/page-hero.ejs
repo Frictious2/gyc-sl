@@ -13,7 +13,7 @@
       <div class="col-lg-7">
         <% if (eyebrow) { %><span class="eyebrow"><%= eyebrow %></span><% } %>
         <h1 class="display-5 fw-bold mt-3"><%= title %></h1>
-        <% if (summary) { %><p class="lead page-hero-copy mt-3"><%= summary %></p><% } %>
+        <% if (summary) { %><div class="lead page-hero-copy mt-3"><%- summary %></div><% } %>
         <% if (heroButtons.length) { %>
           <div class="d-flex flex-wrap gap-3 mt-4">
             <% heroButtons.forEach((button, index) => { %>

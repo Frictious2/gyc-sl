@@ -1,7 +1,9 @@
 <%- include('../../partials/page-hero', {
   eyebrow: 'Projects',
-  title: 'Youth-led initiatives across Sierra Leone',
-  summary: 'Explore current and completed projects making a difference in communities across the country.',
+  title: page?.hero_title || page?.title || 'Youth-led initiatives across Sierra Leone',
+  summary: page?.hero_subtitle || 'Explore current and completed projects making a difference in communities across the country.',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
   breadcrumbItems: [{ label: 'Projects' }]
 }) %>
 

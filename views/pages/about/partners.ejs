@@ -10,11 +10,17 @@
   ]
 }) %>
 
+<%
+  const partnerSections = Array.isArray(page?.sections) ? page.sections : [];
+  const partnersSection = partnerSections.find((section) => section.section_key === 'partners');
+%>
+
 <section class="py-5">
   <div class="container">
     <div class="section-heading mb-4">
-      <span class="eyebrow">Our Partners</span>
-      <h2 class="display-6 fw-bold mt-3">Cross-sector collaboration for sustainable development</h2>
+      <span class="eyebrow"><%= partnersSection?.subtitle || 'Our Partners' %></span>
+      <h2 class="display-6 fw-bold mt-3"><%= partnersSection?.title || 'Cross-sector collaboration for sustainable development' %></h2>
+      <% if (partnersSection?.body) { %><div class="section-subtitle mt-3"><%- partnersSection.body %></div><% } %>
     </div>
     <%- include('../../partials/partner-strip', { partners }) %>
   </div>
@@ -22,10 +28,10 @@
 
 <%- include('../../partials/cta-banner', {
   cta: {
-    title: 'Become a Partner',
-    body: 'We welcome new partnerships that align with our mission and expand youth-led impact in Sierra Leone.',
+    title: partnersSection?.cta_label || 'Become a Partner',
+    body: partnersSection?.body || 'We welcome new partnerships that align with our mission and expand youth-led impact in Sierra Leone.',
     buttons: [
-      { label: 'Partner With Us', href: '/get-involved/partner' }
+      { label: partnersSection?.cta_label || 'Partner With Us', href: partnersSection?.cta_link || '/get-involved/partner' }
     ]
   }
 }) %>

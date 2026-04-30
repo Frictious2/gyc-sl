@@ -149,7 +149,8 @@ exports.programDetail = async (req, res, next) => {
 
 exports.projectsListing = async (req, res, next) => {
   try {
-    const [allProjects, seo, footerSettings] = await Promise.all([
+    const [page, allProjects, seo, footerSettings] = await Promise.all([
+      contentService.getPage('/projects'),
       contentService.getProjects(),
       contentService.getSeo('/projects'),
       contentService.getFooterSettings()
@@ -171,6 +172,7 @@ exports.projectsListing = async (req, res, next) => {
     render(res, 'pages/projects/index', {
       title: 'Projects',
       pageMeta: metaFromSeo(seo, 'Projects'),
+      page,
       projects,
       filters,
       footerSettings
@@ -201,7 +203,8 @@ exports.projectDetail = async (req, res, next) => {
 
 exports.newsListing = async (req, res, next) => {
   try {
-    const [posts, seo, footerSettings] = await Promise.all([
+    const [page, posts, seo, footerSettings] = await Promise.all([
+      contentService.getPage('/news'),
       contentService.getNews(),
       contentService.getSeo('/news'),
       contentService.getFooterSettings()
@@ -210,6 +213,7 @@ exports.newsListing = async (req, res, next) => {
     render(res, 'pages/news/index', {
       title: 'News',
       pageMeta: metaFromSeo(seo, 'News'),
+      page,
       posts,
       footerSettings
     });

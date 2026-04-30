@@ -7,12 +7,18 @@
   breadcrumbItems: [{ label: 'Contact' }]
 }) %>
 
+<%
+  const contactSections = Array.isArray(page?.sections) ? page.sections : [];
+  const contactFormSection = contactSections.find((section) => section.section_key === 'contact-form');
+%>
+
 <section class="py-5">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-5">
         <div class="sdg-card h-100">
-          <h2 class="h4">Contact Form</h2>
+          <h2 class="h4"><%= contactFormSection?.title || 'Contact Form' %></h2>
+          <% if (contactFormSection?.body) { %><div class="section-subtitle"><%- contactFormSection.body %></div><% } %>
           <%- include('../../partials/flash-messages') %>
           <form action="/contact" method="post" class="row g-3 needs-validation" novalidate>
             <div class="col-12">

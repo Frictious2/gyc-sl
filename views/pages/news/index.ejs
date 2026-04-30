@@ -1,7 +1,9 @@
 <%- include('../../partials/page-hero', {
-  eyebrow: 'News & Events',
-  title: 'Latest updates from GYC Sierra Leone',
-  summary: 'Stay informed about activities, events, press releases, and impact stories.',
+  eyebrow: page?.title || 'News & Events',
+  title: page?.hero_title || 'Latest updates from GYC Sierra Leone',
+  summary: page?.hero_subtitle || 'Stay informed about activities, events, press releases, and impact stories.',
+  image: page?.hero_image_path,
+  imageAlt: page?.hero_image_alt,
   breadcrumbItems: [{ label: 'News & Events' }]
 }) %>
 

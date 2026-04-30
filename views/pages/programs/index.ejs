@@ -7,8 +7,20 @@
   breadcrumbItems: [{ label: 'Programs' }]
 }) %>
 
+<%
+  const programSections = Array.isArray(page?.sections) ? page.sections : [];
+  const overviewSection = programSections.find((section) => section.section_key === 'programs-overview');
+%>
+
 <section class="py-5">
   <div class="container">
+    <% if (overviewSection?.title || overviewSection?.body) { %>
+      <div class="section-heading mb-4">
+        <span class="eyebrow"><%= overviewSection?.subtitle || 'Programs Overview' %></span>
+        <h2 class="display-6 fw-bold mt-3"><%= overviewSection?.title || 'Our Programs' %></h2>
+        <% if (overviewSection?.body) { %><div class="section-subtitle mt-3"><%- overviewSection.body %></div><% } %>
+      </div>
+    <% } %>
     <div class="row g-4">
       <% programs.forEach((program) => { %>
         <div class="col-md-6 col-xl-4">

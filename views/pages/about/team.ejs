@@ -10,11 +10,19 @@
   ]
 }) %>
 
+<%
+  const teamSections = Array.isArray(page?.sections) ? page.sections : [];
+  const leadershipSection = teamSections.find((section) => section.section_key === 'leadership-team');
+  const boardSection = teamSections.find((section) => section.section_key === 'board');
+  const districtsSection = teamSections.find((section) => section.section_key === 'district-coordinators');
+%>
+
 <section class="py-5">
   <div class="container">
     <div class="section-heading mb-4">
-      <span class="eyebrow">Leadership Team</span>
-      <h2 class="display-6 fw-bold mt-3">Youth energy with professional expertise</h2>
+      <span class="eyebrow"><%= leadershipSection?.subtitle || 'Leadership Team' %></span>
+      <h2 class="display-6 fw-bold mt-3"><%= leadershipSection?.title || 'Youth energy with professional expertise' %></h2>
+      <% if (leadershipSection?.body) { %><div class="section-subtitle mt-3"><%- leadershipSection.body %></div><% } %>
     </div>
     <div class="row g-4">
       <% teamBundle.team.forEach((person) => { %>
@@ -29,8 +37,9 @@
 <section class="py-5 bg-soft">
   <div class="container">
     <div class="section-heading mb-4">
-      <span class="eyebrow">Board of Directors</span>
-      <h2 class="display-6 fw-bold mt-3">Strategic oversight and governance</h2>
+      <span class="eyebrow"><%= boardSection?.subtitle || 'Board of Directors' %></span>
+      <h2 class="display-6 fw-bold mt-3"><%= boardSection?.title || 'Strategic oversight and governance' %></h2>
+      <% if (boardSection?.body) { %><div class="section-subtitle mt-3"><%- boardSection.body %></div><% } %>
     </div>
     <div class="row g-4">
       <% teamBundle.board.forEach((person) => { %>
@@ -45,8 +54,9 @@
 <section class="py-5">
   <div class="container">
     <div class="section-heading mb-4">
-      <span class="eyebrow">District Coordinators</span>
-      <h2 class="display-6 fw-bold mt-3">Grassroots reach through a volunteer network</h2>
+      <span class="eyebrow"><%= districtsSection?.subtitle || 'District Coordinators' %></span>
+      <h2 class="display-6 fw-bold mt-3"><%= districtsSection?.title || 'Grassroots reach through a volunteer network' %></h2>
+      <% if (districtsSection?.body) { %><div class="section-subtitle mt-3"><%- districtsSection.body %></div><% } %>
     </div>
     <div class="row g-4">
       <% teamBundle.districts.forEach((person) => { %>

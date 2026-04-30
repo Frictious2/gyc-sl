@@ -27,8 +27,8 @@
               <div class="placeholder-image rounded-4 card-media mb-3">Section image placeholder</div>
             <% } %>
             <h2 class="h4"><%= section.title %></h2>
-            <% if (section.subtitle) { %><p class="section-subtitle"><%= section.subtitle %></p><% } %>
-            <p class="mb-0"><%= section.body %></p>
+            <% if (section.subtitle) { %><div class="section-subtitle"><%- section.subtitle %></div><% } %>
+            <div class="mb-0"><%- section.body || '' %></div>
             <% if (section.cta_label && section.cta_link) { %>
               <div class="mt-4 d-flex flex-wrap gap-2">
                 <a href="<%= section.cta_link %>" class="btn btn-sdg btn-sm"><%= section.cta_label %></a>

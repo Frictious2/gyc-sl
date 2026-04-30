@@ -17,7 +17,7 @@
       <span class="eyebrow">Impact</span>
       <h2 class="display-6 fw-bold mt-3"><%= homeContent.statsSection?.title || 'Youth-driven results across Sierra Leone' %></h2>
       <% if (homeContent.statsSection?.subtitle) { %>
-        <p class="section-subtitle mt-3 mb-0"><%= homeContent.statsSection.subtitle %></p>
+        <div class="section-subtitle mt-3 mb-0"><%- homeContent.statsSection.subtitle %></div>
       <% } %>
     </div>
     <div class="row g-4">
@@ -36,7 +36,7 @@
       <div class="col-lg-5">
         <span class="eyebrow"><%= homeContent.aboutSection?.subtitle || 'Who We Are' %></span>
         <h2 class="display-6 fw-bold mt-3"><%= homeContent.aboutSection?.title || 'A youth-led movement for sustainable development' %></h2>
-        <p class="lead"><%= homeContent.aboutSection?.body %></p>
+        <div class="lead"><%- homeContent.aboutSection?.body || '' %></div>
         <a href="<%= homeContent.aboutSection?.cta_link || '/about' %>" class="btn btn-sdg"><%= homeContent.aboutSection?.cta_label || 'Discover Our Story' %></a>
       </div>
       <div class="col-lg-7">
@@ -55,7 +55,7 @@
         <span class="eyebrow"><%= homeContent.programsSection?.subtitle || 'What We Do' %></span>
         <h2 class="display-6 fw-bold mt-3"><%= homeContent.programsSection?.title || 'Five thematic pillars for lasting impact' %></h2>
         <% if (homeContent.programsSection?.body) { %>
-          <p class="section-subtitle mt-3 mb-0"><%= homeContent.programsSection.body %></p>
+          <div class="section-subtitle mt-3 mb-0"><%- homeContent.programsSection.body %></div>
         <% } %>
       </div>
       <a href="<%= homeContent.programsSection?.cta_link || '/programs' %>" class="btn btn-outline-sdg"><%= homeContent.programsSection?.cta_label || 'Explore Our Programs' %></a>
@@ -77,7 +77,7 @@
         <span class="eyebrow"><%= homeContent.featuredSection?.subtitle || 'Featured Project' %></span>
         <h2 class="display-6 fw-bold mt-3"><%= homeContent.featuredSection?.title || 'From ideas to community impact' %></h2>
         <% if (homeContent.featuredSection?.body) { %>
-          <p class="section-subtitle mt-3"><%= homeContent.featuredSection.body %></p>
+          <div class="section-subtitle mt-3"><%- homeContent.featuredSection.body %></div>
         <% } %>
         <% if (homeContent.featuredProject) { %>
           <%- include('../partials/project-card', { project: homeContent.featuredProject }) %>
@@ -101,7 +101,7 @@
         <span class="eyebrow"><%= homeContent.partnersSection?.subtitle || 'Partners & Supporters' %></span>
         <h2 class="display-6 fw-bold mt-3"><%= homeContent.partnersSection?.title || 'Collaboration that scales youth impact' %></h2>
         <% if (homeContent.partnersSection?.body) { %>
-          <p class="section-subtitle mt-3 mb-0"><%= homeContent.partnersSection.body %></p>
+          <div class="section-subtitle mt-3 mb-0"><%- homeContent.partnersSection.body %></div>
         <% } %>
       </div>
       <a href="<%= homeContent.partnersSection?.cta_link || '/about/partners' %>" class="btn btn-outline-sdg"><%= homeContent.partnersSection?.cta_label || 'View Partners' %></a>

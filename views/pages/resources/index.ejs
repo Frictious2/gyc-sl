@@ -7,8 +7,20 @@
   breadcrumbItems: [{ label: 'Resources' }]
 }) %>
 
+<%
+  const resourceSections = Array.isArray(page?.sections) ? page.sections : [];
+  const categoriesSection = resourceSections.find((section) => section.section_key === 'resource-categories');
+%>
+
 <section class="py-5">
   <div class="container">
+    <% if (categoriesSection?.title || categoriesSection?.body) { %>
+      <div class="section-heading mb-4">
+        <span class="eyebrow"><%= categoriesSection?.subtitle || 'Resource Categories' %></span>
+        <h2 class="display-6 fw-bold mt-3"><%= categoriesSection?.title || 'Knowledge Hub' %></h2>
+        <% if (categoriesSection?.body) { %><div class="section-subtitle mt-3"><%- categoriesSection.body %></div><% } %>
+      </div>
+    <% } %>
     <% Object.entries(groupedResources).forEach(([category, resources]) => { %>
       <div class="mb-5">
         <div class="section-heading mb-4">
