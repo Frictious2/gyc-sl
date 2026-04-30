@@ -1,5 +1,66 @@
 (() => {
   let activeSelectId = null;
+  const editors = [];
+  const plainTextNames = new Set([
+    'meta_json',
+    'footer_quick_links',
+    'footer_program_links',
+    'footer_get_involved_links',
+    'footer_socials',
+    'contact_socials',
+    'contact_map_embed'
+  ]);
+
+  const syncEditorsForForm = (form) => {
+    editors.forEach(({ textarea, editor }) => {
+      if (form.contains(textarea)) {
+        textarea.value = editor.getData();
+      }
+    });
+  };
+
+  const initWysiwygEditors = async () => {
+    if (typeof window.ClassicEditor === 'undefined') {
+      return;
+    }
+
+    const textareas = [...document.querySelectorAll('textarea')].filter((textarea) => {
+      if (textarea.dataset.plainText === 'true') {
+        return false;
+      }
+
+      if (plainTextNames.has(textarea.name)) {
+        return false;
+      }
+
+      return true;
+    });
+
+    for (const textarea of textareas) {
+      try {
+        const editor = await window.ClassicEditor.create(textarea, {
+          toolbar: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'link',
+            'bulletedList',
+            'numberedList',
+            'blockQuote',
+            '|',
+            'insertTable',
+            'undo',
+            'redo'
+          ]
+        });
+
+        editors.push({ textarea, editor });
+      } catch (error) {
+        console.error('Failed to initialize CKEditor:', textarea.name || textarea.id, error);
+      }
+    }
+  };
 
   document.querySelectorAll('[data-media-target]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -43,6 +104,8 @@
 
   document.querySelectorAll('.needs-validation').forEach((form) => {
     form.addEventListener('submit', (event) => {
+      syncEditorsForForm(form);
+
       if (!form.checkValidity()) {
         event.preventDefault();
         event.stopPropagation();
@@ -61,6 +124,16 @@
     });
   });
 
+  document.querySelectorAll('form').forEach((form) => {
+    if (form.classList.contains('needs-validation')) {
+      return;
+    }
+
+    form.addEventListener('submit', () => {
+      syncEditorsForForm(form);
+    });
+  });
+
   document.querySelectorAll('[data-auto-submit]').forEach((element) => {
     element.addEventListener('change', () => {
       const form = element.closest('form');
@@ -69,4 +142,6 @@
       }
     });
   });
+
+  initWysiwygEditors();
 })();

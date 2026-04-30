@@ -65,17 +65,16 @@ async function getDbPage(routePath) {
   }
 
   const sections = await PublicSite.getSectionsByPageId(page.id);
-  const enrichedSections = await Promise.all(
-    sections.map(async (section) => {
-      const [items, media] = await Promise.all([
-        PublicSite.getSectionItems(section.id),
-        PublicSite.getSectionMedia(section.id)
-      ]);
-      return parseSection({
-        ...section,
-        items,
-        media
-      });
+  const sectionIds = sections.map((section) => section.id).filter(Boolean);
+  const [itemsBySection, mediaBySection] = await Promise.all([
+    PublicSite.getSectionItemsBySectionIds(sectionIds),
+    PublicSite.getSectionMediaBySectionIds(sectionIds)
+  ]);
+  const enrichedSections = sections.map((section) =>
+    parseSection({
+      ...section,
+      items: itemsBySection[section.id] || [],
+      media: mediaBySection[section.id] || []
     })
   );
 
@@ -217,14 +216,21 @@ exports.getHomeContent = async () => {
 
   const statsSection = page?.sections?.find((section) => section.section_key === 'impact-statistics');
   const aboutSection = page?.sections?.find((section) => section.section_key === 'about-preview');
+  const heroSection = page?.sections?.find((section) => section.section_key === 'hero');
+  const programsSection = page?.sections?.find((section) => section.section_key === 'programs-overview');
   const finalCta = page?.sections?.find((section) => section.section_key === 'final-cta');
   const featuredSection = page?.sections?.find((section) => section.section_key === 'featured-news-project');
+  const partnersSection = page?.sections?.find((section) => section.section_key === 'partners-supporters');
 
   return {
     page,
+    heroSection,
     stats: statsSection ? safeParseArray(statsSection.body, 'home impact statistics') : [],
+    statsSection,
     aboutSection,
+    programsSection,
     featuredSection,
+    partnersSection,
     finalCta,
     programs: programs.slice(0, 5),
     partners: partners.slice(0, 10),

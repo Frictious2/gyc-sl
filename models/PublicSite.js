@@ -1,6 +1,17 @@
 const BaseModel = require('./BaseModel');
 const SchemaInspector = require('./SchemaInspector');
 
+function groupRowsBySection(rows) {
+  return rows.reduce((acc, row) => {
+    const key = row.section_id;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(row);
+    return acc;
+  }, {});
+}
+
 class PublicSite extends BaseModel {
   static async getPageByRoute(routePath) {
     const [pageColumns, mediaColumns] = await Promise.all([
@@ -102,6 +113,44 @@ class PublicSite extends BaseModel {
     );
   }
 
+  static async getSectionItemsBySectionIds(sectionIds) {
+    if (!Array.isArray(sectionIds) || !sectionIds.length) {
+      return {};
+    }
+
+    const [itemColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('section_items'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+    const sectionIdList = sectionIds.join(', ');
+
+    const rows = await this.query(
+      `SELECT ${[
+        'si.section_id',
+        'si.id',
+        itemColumns.has('item_type') ? 'si.item_type' : "'card' AS item_type",
+        itemColumns.has('title') ? 'si.title' : 'NULL AS title',
+        itemColumns.has('subtitle') ? 'si.subtitle' : 'NULL AS subtitle',
+        itemColumns.has('body') ? 'si.body' : 'NULL AS body',
+        itemColumns.has('meta_json') ? 'si.meta_json' : 'NULL AS meta_json',
+        itemColumns.has('link_label') ? 'si.link_label' : 'NULL AS link_label',
+        itemColumns.has('link_url') ? 'si.link_url' : 'NULL AS link_url',
+        itemColumns.has('sort_order') ? 'si.sort_order' : '0 AS sort_order',
+        mediaColumns.has('file_path') ? 'media.file_path AS image_path' : 'NULL AS image_path',
+        mediaColumns.has('alt_text') ? 'media.alt_text AS image_alt' : 'NULL AS image_alt'
+      ].join(', ')}
+       FROM section_items si
+       LEFT JOIN media_library media ON media.id = si.image_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
+       WHERE si.section_id IN (${sectionIdList})
+         ${itemColumns.has('deleted_at') ? 'AND si.deleted_at IS NULL' : ''}
+         ${itemColumns.has('is_published') ? 'AND si.is_published = 1' : ''}
+         ${itemColumns.has('status') ? "AND si.status = 'published'" : ''}
+       ORDER BY si.section_id ASC, ${itemColumns.has('sort_order') ? 'si.sort_order ASC,' : ''} si.id ASC`
+    );
+
+    return groupRowsBySection(Array.isArray(rows) ? rows : []);
+  }
+
   static async getSectionMedia(sectionId) {
     const [sectionMediaColumns, mediaColumns] = await Promise.all([
       SchemaInspector.getColumns('section_media'),
@@ -126,6 +175,39 @@ class PublicSite extends BaseModel {
        ORDER BY ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`,
       { sectionId }
     );
+  }
+
+  static async getSectionMediaBySectionIds(sectionIds) {
+    if (!Array.isArray(sectionIds) || !sectionIds.length) {
+      return {};
+    }
+
+    const [sectionMediaColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('section_media'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+    const sectionIdList = sectionIds.join(', ');
+
+    const rows = await this.query(
+      `SELECT ${[
+        'sm.section_id',
+        'sm.id',
+        sectionMediaColumns.has('media_role') ? 'sm.media_role' : "'gallery' AS media_role",
+        sectionMediaColumns.has('caption') ? 'sm.caption' : 'NULL AS caption',
+        sectionMediaColumns.has('alt_text') ? 'sm.alt_text' : 'NULL AS alt_text',
+        sectionMediaColumns.has('sort_order') ? 'sm.sort_order' : '0 AS sort_order',
+        mediaColumns.has('file_path') ? 'media.file_path' : 'NULL AS file_path',
+        mediaColumns.has('alt_text') ? 'media.alt_text AS media_alt' : 'NULL AS media_alt',
+        mediaColumns.has('title') ? 'media.title' : 'NULL AS title'
+      ].join(', ')}
+       FROM section_media sm
+       LEFT JOIN media_library media ON media.id = sm.media_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
+       WHERE sm.section_id IN (${sectionIdList})
+         ${sectionMediaColumns.has('deleted_at') ? 'AND sm.deleted_at IS NULL' : ''}
+       ORDER BY sm.section_id ASC, ${sectionMediaColumns.has('sort_order') ? 'sm.sort_order ASC,' : ''} sm.id ASC`
+    );
+
+    return groupRowsBySection(Array.isArray(rows) ? rows : []);
   }
 
   static async getPrograms() {
