@@ -432,7 +432,17 @@ a {
   max-width: 56rem;
 }
 
+.home-supporters-section {
+  padding-top: 5rem !important;
+  margin-top: 1rem;
+}
+
 @media (max-width: 991.98px) {
+  .home-supporters-section {
+    padding-top: 3.5rem !important;
+    margin-top: 0.5rem;
+  }
+
   .hero-image,
   .hero-placeholder {
     min-height: 280px;
