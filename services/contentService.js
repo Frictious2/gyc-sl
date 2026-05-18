@@ -221,9 +221,21 @@ exports.getHomeContent = async () => {
   const finalCta = page?.sections?.find((section) => section.section_key === 'final-cta');
   const featuredSection = page?.sections?.find((section) => section.section_key === 'featured-news-project');
   const partnersSection = page?.sections?.find((section) => section.section_key === 'partners-supporters');
+  const heroContent = {
+    eyebrow: heroSection?.subtitle || 'SDG-Inspired Youth Leadership',
+    title: heroSection?.title || page?.hero_title || page?.title || 'Home',
+    summary: heroSection?.body || page?.hero_subtitle || '',
+    image: heroSection?.image_path || page?.hero_image_path || null,
+    imageAlt: heroSection?.image_alt || page?.hero_image_alt || null,
+    primaryButtonLabel: heroSection?.cta_label || 'Join the Movement',
+    primaryButtonLink: heroSection?.cta_link || '/get-involved',
+    secondaryButtonLabel: heroSection?.secondary_cta_label || 'Learn More',
+    secondaryButtonLink: heroSection?.secondary_cta_link || '/about'
+  };
 
   return {
     page,
+    heroContent,
     heroSection,
     stats: statsSection ? safeParseArray(statsSection.body, 'home impact statistics') : [],
     statsSection,

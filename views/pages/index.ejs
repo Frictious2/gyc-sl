@@ -1,12 +1,12 @@
 <%- include('../partials/page-hero', {
-  eyebrow: homeContent.heroSection?.subtitle || 'SDG-Inspired Youth Leadership',
-  title: homeContent.page.hero_title || homeContent.heroSection?.title,
-  summary: homeContent.page.hero_subtitle || homeContent.heroSection?.body,
-  image: homeContent.page.hero_image_path,
-  imageAlt: homeContent.page.hero_image_alt,
+  eyebrow: homeContent.heroContent?.eyebrow || 'SDG-Inspired Youth Leadership',
+  title: homeContent.heroContent?.title,
+  summary: homeContent.heroContent?.summary,
+  image: homeContent.heroContent?.image,
+  imageAlt: homeContent.heroContent?.imageAlt,
   buttons: [
-    { label: homeContent.heroSection?.cta_label || 'Join the Movement', href: homeContent.heroSection?.cta_link || '/get-involved' },
-    { label: homeContent.heroSection?.secondary_cta_label || 'Learn More', href: homeContent.heroSection?.secondary_cta_link || '/about' },
+    { label: homeContent.heroContent?.primaryButtonLabel || 'Join the Movement', href: homeContent.heroContent?.primaryButtonLink || '/get-involved' },
+    { label: homeContent.heroContent?.secondaryButtonLabel || 'Learn More', href: homeContent.heroContent?.secondaryButtonLink || '/about' },
     { label: 'Donate Now', href: '/donate' }
   ]
 }) %>
