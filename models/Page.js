@@ -35,7 +35,129 @@ function groupRowsBySection(rows) {
   }, {});
 }
 
+function isHomePageRecord(page = {}) {
+  const slug = String(page.slug || '').trim().toLowerCase();
+  const routePath = String(page.route_path || '').trim().toLowerCase();
+  const pageType = String(page.page_type || '').trim().toLowerCase();
+
+  return (
+    slug === 'home' ||
+    routePath === '/' ||
+    routePath === '' ||
+    routePath === 'home' ||
+    routePath === '/home' ||
+    routePath === 'index' ||
+    pageType === 'home'
+  );
+}
+
 class Page extends BaseModel {
+  static async getPageIdentity(id) {
+    const columns = await SchemaInspector.getColumns('pages');
+    const rows = await this.query(
+      `SELECT id,
+              ${columns.has('slug') ? 'slug' : "'' AS slug"},
+              ${columns.has('route_path') ? 'route_path' : "'' AS route_path"},
+              ${columns.has('page_type') ? 'page_type' : "'standard' AS page_type"}
+       FROM pages
+       WHERE id = :id
+       LIMIT 1`,
+      { id }
+    );
+
+    return rows[0] || null;
+  }
+
+  static async getSectionIdentity(id) {
+    const columns = await SchemaInspector.getColumns('page_sections');
+    const rows = await this.query(
+      `SELECT id,
+              page_id,
+              ${columns.has('section_key') ? 'section_key' : "CONCAT('section-', id) AS section_key"}
+       FROM page_sections
+       WHERE id = :id
+       LIMIT 1`,
+      { id }
+    );
+
+    return rows[0] || null;
+  }
+
+  static async syncHomeHeroSectionFromPage(pageId, payload = {}) {
+    const sectionColumns = await SchemaInspector.getColumns('page_sections');
+    const updates = [];
+    const params = { pageId };
+
+    if (sectionColumns.has('title') && Object.prototype.hasOwnProperty.call(payload, 'hero_title')) {
+      updates.push('title = :hero_title');
+      params.hero_title = sanitizeString(payload.hero_title);
+    }
+
+    if (sectionColumns.has('body') && Object.prototype.hasOwnProperty.call(payload, 'hero_subtitle')) {
+      updates.push('body = :hero_subtitle');
+      params.hero_subtitle = payload.hero_subtitle ?? null;
+    }
+
+    if (sectionColumns.has('image_id') && Object.prototype.hasOwnProperty.call(payload, 'hero_image_id')) {
+      updates.push('image_id = :hero_image_id');
+      params.hero_image_id = sanitizeNullableForeignKey(payload.hero_image_id);
+    }
+
+    if (!updates.length) {
+      return;
+    }
+
+    await this.query(
+      `UPDATE page_sections
+       SET ${updates.join(', ')}
+       WHERE page_id = :pageId
+         AND section_key = 'hero'`,
+      params
+    );
+  }
+
+  static async syncHomePageFromHeroSection(sectionId, payload = {}) {
+    const section = await this.getSectionIdentity(sectionId);
+    if (!section || String(section.section_key || '') !== 'hero') {
+      return;
+    }
+
+    const page = await this.getPageIdentity(section.page_id);
+    if (!isHomePageRecord(page)) {
+      return;
+    }
+
+    const pageColumns = await SchemaInspector.getColumns('pages');
+    const updates = [];
+    const params = { id: section.page_id };
+
+    if (pageColumns.has('hero_title') && Object.prototype.hasOwnProperty.call(payload, 'title')) {
+      updates.push('hero_title = :hero_title');
+      params.hero_title = sanitizeString(payload.title);
+    }
+
+    if (pageColumns.has('hero_subtitle') && Object.prototype.hasOwnProperty.call(payload, 'body')) {
+      updates.push('hero_subtitle = :hero_subtitle');
+      params.hero_subtitle = payload.body ?? null;
+    }
+
+    if (pageColumns.has('hero_image_id') && Object.prototype.hasOwnProperty.call(payload, 'image_id')) {
+      updates.push('hero_image_id = :hero_image_id');
+      params.hero_image_id = sanitizeNullableForeignKey(payload.image_id);
+    }
+
+    if (!updates.length) {
+      return;
+    }
+
+    await this.query(
+      `UPDATE pages
+       SET ${updates.join(', ')}
+       WHERE id = :id`,
+      params
+    );
+  }
+
   static async all() {
     const columns = await SchemaInspector.getColumns('pages');
     const whereParts = [];
@@ -216,12 +338,19 @@ class Page extends BaseModel {
       return { affectedRows: 0 };
     }
 
-    return this.query(
+    const result = await this.query(
       `UPDATE pages
        SET ${updates.join(', ')}
        WHERE id = :id`,
       params
     );
+
+    const page = await this.getPageIdentity(id);
+    if (isHomePageRecord(page)) {
+      await this.syncHomeHeroSectionFromPage(id, payload);
+    }
+
+    return result;
   }
 
   static async updateSection(id, payload) {
@@ -254,12 +383,15 @@ class Page extends BaseModel {
       return { affectedRows: 0 };
     }
 
-    return this.query(
+    const result = await this.query(
       `UPDATE page_sections
        SET ${updates.join(', ')}
        WHERE id = :id`,
       params
     );
+
+    await this.syncHomePageFromHeroSection(id, payload);
+    return result;
   }
 
   static async createSectionItem(payload) {

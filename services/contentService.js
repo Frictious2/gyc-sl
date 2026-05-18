@@ -84,6 +84,39 @@ async function getDbPage(routePath) {
   };
 }
 
+async function getDbHomePage() {
+  const page = await PublicSite.getHomePage();
+  if (!page) {
+    return null;
+  }
+
+  const sections = await PublicSite.getSectionsByPageId(page.id);
+  if (!Array.isArray(sections) || !sections.length) {
+    return {
+      ...page,
+      sections: []
+    };
+  }
+
+  const sectionIds = sections.map((section) => section.id).filter(Boolean);
+  const [itemsBySection, mediaBySection] = await Promise.all([
+    PublicSite.getSectionItemsBySectionIds(sectionIds),
+    PublicSite.getSectionMediaBySectionIds(sectionIds)
+  ]);
+  const enrichedSections = sections.map((section) =>
+    parseSection({
+      ...section,
+      items: itemsBySection[section.id] || [],
+      media: mediaBySection[section.id] || []
+    })
+  );
+
+  return {
+    ...page,
+    sections: enrichedSections
+  };
+}
+
 async function withFallback(dbWork, fallback) {
   try {
     const result = await dbWork();
@@ -205,9 +238,30 @@ exports.getSeo = (routePath) =>
     async () => seedData.seo[routePath] || seedData.seo.default
   );
 
+exports.getHomePage = async () => {
+  try {
+    const dbPage = await getDbHomePage();
+    if (dbPage && Array.isArray(dbPage.sections) && dbPage.sections.length) {
+      return dbPage;
+    }
+
+    if (dbPage) {
+      const fallbackHome = normalizeSeedPage('/') || {};
+      return {
+        ...dbPage,
+        sections: Array.isArray(dbPage.sections) && dbPage.sections.length ? dbPage.sections : fallbackHome.sections || []
+      };
+    }
+  } catch (error) {
+    // Fall through to seed fallback below.
+  }
+
+  return normalizeSeedPage('/');
+};
+
 exports.getHomeContent = async () => {
   const [page, programs, partners, projects, news] = await Promise.all([
-    exports.getPage('/'),
+    exports.getHomePage(),
     exports.getPrograms(),
     exports.getPartners(),
     exports.getProjects(),
@@ -223,10 +277,10 @@ exports.getHomeContent = async () => {
   const partnersSection = page?.sections?.find((section) => section.section_key === 'partners-supporters');
   const heroContent = {
     eyebrow: heroSection?.subtitle || 'SDG-Inspired Youth Leadership',
-    title: heroSection?.title || page?.hero_title || page?.title || 'Home',
-    summary: heroSection?.body || page?.hero_subtitle || '',
-    image: heroSection?.image_path || page?.hero_image_path || null,
-    imageAlt: heroSection?.image_alt || page?.hero_image_alt || null,
+    title: page?.hero_title || heroSection?.title || page?.title || 'Home',
+    summary: page?.hero_subtitle || heroSection?.body || '',
+    image: page?.hero_image_path || heroSection?.image_path || null,
+    imageAlt: page?.hero_image_alt || heroSection?.image_alt || null,
     primaryButtonLabel: heroSection?.cta_label || 'Join the Movement',
     primaryButtonLink: heroSection?.cta_link || '/get-involved',
     secondaryButtonLabel: heroSection?.secondary_cta_label || 'Learn More',

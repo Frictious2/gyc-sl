@@ -13,6 +13,59 @@ function groupRowsBySection(rows) {
 }
 
 class PublicSite extends BaseModel {
+  static async getHomePage() {
+    const [pageColumns, mediaColumns] = await Promise.all([
+      SchemaInspector.getColumns('pages'),
+      SchemaInspector.getColumns('media_library')
+    ]);
+
+    const pages = await this.query(
+      `SELECT ${[
+        'p.id',
+        'p.title',
+        pageColumns.has('slug') ? 'p.slug' : "'' AS slug",
+        pageColumns.has('route_path') ? 'p.route_path' : "'' AS route_path",
+        pageColumns.has('page_type') ? 'p.page_type' : "'standard' AS page_type",
+        pageColumns.has('hero_title') ? 'p.hero_title' : 'NULL AS hero_title',
+        pageColumns.has('hero_subtitle') ? 'p.hero_subtitle' : 'NULL AS hero_subtitle',
+        pageColumns.has('hero_image_id') ? 'p.hero_image_id' : 'NULL AS hero_image_id',
+        pageColumns.has('status') ? 'p.status' : "'published' AS status",
+        pageColumns.has('is_published') ? 'p.is_published' : '1 AS is_published',
+        mediaColumns.has('file_path') ? 'hero_media.file_path AS hero_image_path' : 'NULL AS hero_image_path',
+        mediaColumns.has('alt_text') ? 'hero_media.alt_text AS hero_image_alt' : 'NULL AS hero_image_alt'
+      ].join(', ')}
+       FROM pages p
+       LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id ${mediaColumns.has('deleted_at') ? 'AND hero_media.deleted_at IS NULL' : ''}
+       WHERE (
+         ${pageColumns.has('slug') ? "p.slug = 'home' OR" : ''}
+         ${pageColumns.has('page_type') ? "p.page_type = 'home' OR" : ''}
+         p.route_path = '/' OR
+         p.route_path = '' OR
+         p.route_path = 'home' OR
+         p.route_path = '/home' OR
+         p.route_path = 'index'
+       )
+         ${pageColumns.has('deleted_at') ? 'AND p.deleted_at IS NULL' : ''}
+         ${pageColumns.has('is_published') ? 'AND p.is_published = 1' : ''}
+         ${pageColumns.has('status') ? "AND p.status = 'published'" : ''}
+       ORDER BY
+         CASE
+           ${pageColumns.has('slug') ? "WHEN p.slug = 'home' THEN 0" : ''}
+           ${pageColumns.has('page_type') ? "WHEN p.page_type = 'home' THEN 1" : ''}
+           WHEN p.route_path = '/' THEN 2
+           WHEN p.route_path = '' THEN 3
+           WHEN p.route_path = 'home' THEN 4
+           WHEN p.route_path = '/home' THEN 5
+           WHEN p.route_path = 'index' THEN 6
+           ELSE 99
+         END,
+         p.id ASC
+       LIMIT 1`
+    );
+
+    return pages[0] || null;
+  }
+
   static async getPageByRoute(routePath) {
     const [pageColumns, mediaColumns] = await Promise.all([
       SchemaInspector.getColumns('pages'),
