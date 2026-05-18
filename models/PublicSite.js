@@ -18,6 +18,34 @@ class PublicSite extends BaseModel {
       SchemaInspector.getColumns('pages'),
       SchemaInspector.getColumns('media_library')
     ]);
+    const isHomeRoute = routePath === '/';
+    const routePathConditions = isHomeRoute
+      ? [
+          "p.route_path = :routePath",
+          "p.route_path = ''",
+          "p.route_path = 'home'",
+          "p.route_path = '/home'",
+          "p.route_path = 'index'",
+          pageColumns.has('slug') ? "p.slug = 'home'" : null,
+          pageColumns.has('slug') ? "p.slug = 'index'" : null,
+          pageColumns.has('page_type') ? "p.page_type = 'home'" : null
+        ].filter(Boolean)
+      : ['p.route_path = :routePath'];
+    const orderBy = isHomeRoute
+      ? `ORDER BY
+          CASE
+            WHEN p.route_path = :routePath THEN 0
+            WHEN p.route_path = '' THEN 1
+            WHEN p.route_path = 'home' THEN 2
+            WHEN p.route_path = '/home' THEN 3
+            WHEN p.route_path = 'index' THEN 4
+            ${pageColumns.has('slug') ? "WHEN p.slug = 'home' THEN 5" : ''}
+            ${pageColumns.has('slug') ? "WHEN p.slug = 'index' THEN 6" : ''}
+            ${pageColumns.has('page_type') ? "WHEN p.page_type = 'home' THEN 7" : ''}
+            ELSE 99
+          END,
+          p.id ASC`
+      : 'ORDER BY p.id ASC';
 
     const pages = await this.query(
       `SELECT ${[
@@ -36,10 +64,11 @@ class PublicSite extends BaseModel {
       ].join(', ')}
        FROM pages p
        LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id ${mediaColumns.has('deleted_at') ? 'AND hero_media.deleted_at IS NULL' : ''}
-       WHERE p.route_path = :routePath
+       WHERE (${routePathConditions.join(' OR ')})
          ${pageColumns.has('deleted_at') ? 'AND p.deleted_at IS NULL' : ''}
          ${pageColumns.has('is_published') ? 'AND p.is_published = 1' : ''}
          ${pageColumns.has('status') ? "AND p.status = 'published'" : ''}
+       ${orderBy}
        LIMIT 1`,
       { routePath }
     );
@@ -379,6 +408,22 @@ class PublicSite extends BaseModel {
       SchemaInspector.getColumns('seo_meta'),
       SchemaInspector.getColumns('media_library')
     ]);
+    const isHomeRoute = routePath === '/';
+    const routePathConditions = isHomeRoute
+      ? ["s.route_path = :routePath", "s.route_path = ''", "s.route_path = 'home'", "s.route_path = '/home'", "s.route_path = 'index'"]
+      : ['s.route_path = :routePath'];
+    const orderBy = isHomeRoute
+      ? `ORDER BY
+          CASE
+            WHEN s.route_path = :routePath THEN 0
+            WHEN s.route_path = '' THEN 1
+            WHEN s.route_path = 'home' THEN 2
+            WHEN s.route_path = '/home' THEN 3
+            WHEN s.route_path = 'index' THEN 4
+            ELSE 99
+          END,
+          s.id ASC`
+      : 'ORDER BY s.id ASC';
 
     const rows = await this.query(
       `SELECT ${[
@@ -392,8 +437,9 @@ class PublicSite extends BaseModel {
       ].join(', ')}
        FROM seo_meta s
        LEFT JOIN media_library media ON media.id = s.og_image_id ${mediaColumns.has('deleted_at') ? 'AND media.deleted_at IS NULL' : ''}
-       WHERE s.route_path = :routePath
+       WHERE (${routePathConditions.join(' OR ')})
          ${seoColumns.has('deleted_at') ? 'AND s.deleted_at IS NULL' : ''}
+       ${orderBy}
        LIMIT 1`,
       { routePath }
     );
