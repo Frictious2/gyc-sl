@@ -2,6 +2,8 @@ module.exports = (req, res, next) => {
   const session = req.session || null;
   const formErrors = (session && session.formErrors) || {};
   const oldInput = (session && session.oldInput) || {};
+  const appVersion = process.env.APP_VERSION || 'dev';
+  const versionedAsset = (assetPath) => `${assetPath}?v=${encodeURIComponent(appVersion)}`;
 
   if (session) {
     session.formErrors = null;
@@ -10,11 +12,14 @@ module.exports = (req, res, next) => {
 
   res.locals.currentPath = req.path;
   res.locals.adminUser = (session && session.adminUser) || null;
+  res.locals.currentAdmin = res.locals.adminUser;
   res.locals.successMessages = typeof req.flash === 'function' ? req.flash('success') : [];
   res.locals.errorMessages = typeof req.flash === 'function' ? req.flash('error') : [];
   res.locals.formErrors = formErrors;
   res.locals.oldInput = oldInput;
   res.locals.appName = process.env.APP_NAME || 'GYC Sierra Leone';
+  res.locals.appVersion = appVersion;
+  res.locals.versionedAsset = versionedAsset;
   res.locals.pageMeta = {
     title: 'GYC Sierra Leone',
     description: 'Youth-led sustainable development organisation in Sierra Leone.',

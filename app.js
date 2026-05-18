@@ -7,7 +7,8 @@ const expressLayouts = require('express-ejs-layouts');
 const methodOverride = require('method-override');
 
 const { sessionConfig } = require('./config/database');
-const { sessionCookieName, getSessionCookieOptions } = require('./config/session');
+const { sessionCookieName, getSessionCookieOptions, getTrustProxySetting } = require('./config/session');
+const { adminNoStore, publicDynamicCacheControl } = require('./middleware/cacheControl');
 const viewHelpers = require('./middleware/viewHelpers');
 const publicRoutes = require('./routes/publicRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -15,8 +16,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 let sessionStore;
 
+const trustProxy = getTrustProxySetting();
+
 if (process.env.USE_DB_SESSIONS === 'true') {
   sessionStore = new MySQLStore(sessionConfig);
+}
+
+if (trustProxy !== false) {
+  app.set('trust proxy', trustProxy);
 }
 
 app.set('view engine', 'ejs');
@@ -27,13 +34,20 @@ app.use(expressLayouts);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    etag: true,
+    lastModified: true,
+    maxAge: process.env.STATIC_ASSET_MAX_AGE || '7d'
+  })
+);
 app.use(
   session({
     key: sessionCookieName,
     secret: process.env.SESSION_SECRET || 'development-secret',
     resave: false,
     saveUninitialized: false,
+    proxy: trustProxy !== false,
     ...(sessionStore ? { store: sessionStore } : {}),
     cookie: getSessionCookieOptions()
   })
@@ -41,8 +55,8 @@ app.use(
 app.use(flash());
 app.use(viewHelpers);
 
-app.use('/', publicRoutes);
-app.use('/admin', adminRoutes);
+app.use('/admin', adminNoStore, adminRoutes);
+app.use('/', publicDynamicCacheControl, publicRoutes);
 
 app.use((req, res) => {
   res.status(404).render('pages/404', {

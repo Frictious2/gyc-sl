@@ -13,7 +13,7 @@
   class="site-brand <%= compact ? 'site-brand-compact' : '' %> <%= variant === 'dark' ? 'site-brand-on-dark' : '' %> text-decoration-none"
 >
   <img
-    src="<%= brand.logoPath %>"
+    src="<%= versionedAsset(brand.logoPath) %>"
     alt="<%= brand.logoAlt || `${brand.name || 'Brand'} logo` %>"
     class="site-brand-logo"
   />

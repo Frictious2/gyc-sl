@@ -83,12 +83,12 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   try {
     if (!req.session) {
-      res.clearCookie(sessionCookieName, getClearCookieOptions());
+      res.clearCookie(sessionCookieName, getClearCookieOptions(req));
       return res.redirect('/admin/login');
     }
 
     await destroySession(req);
-    res.clearCookie(sessionCookieName, getClearCookieOptions());
+    res.clearCookie(sessionCookieName, getClearCookieOptions(req));
     res.redirect('/admin/login');
   } catch (error) {
     next(error);
