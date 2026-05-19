@@ -11,6 +11,10 @@ function cmsDebug(event, details = {}) {
   );
 }
 
+function isProduction() {
+  return String(process.env.NODE_ENV || '').toLowerCase() === 'production';
+}
+
 function splitSemi(text = '') {
   return text
     .split(';')
@@ -318,6 +322,18 @@ exports.getHomePage = async () => {
       cacheUsed: false,
       message: error.message
     });
+  }
+
+  if (isProduction()) {
+    cmsDebug('home.resolve', {
+      source: 'missing-db-home',
+      cacheUsed: false,
+      pageId: null,
+      slug: 'home',
+      routePath: '/',
+      sections: 0
+    });
+    return null;
   }
 
   const fallback = normalizeSeedPage('/');
