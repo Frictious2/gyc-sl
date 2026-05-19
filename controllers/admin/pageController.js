@@ -76,14 +76,24 @@ exports.edit = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    await Page.updatePage(req.params.id, {
+    const pageIdentity = await Page.getPageIdentity(req.params.id);
+    const isHomePage =
+      String(pageIdentity?.slug || '').toLowerCase() === 'home' ||
+      String(pageIdentity?.route_path || '') === '/' ||
+      String(pageIdentity?.page_type || '').toLowerCase() === 'home';
+    const updatePayload = {
       title: req.body.title || '',
-      hero_title: req.body.hero_title || null,
-      hero_subtitle: req.body.hero_subtitle || null,
-      hero_image_id: toNullableId(req.body.hero_image_id),
       status: req.body.status || 'published',
       is_published: req.body.is_published ? 1 : 0
-    });
+    };
+
+    if (!isHomePage) {
+      updatePayload.hero_title = req.body.hero_title || null;
+      updatePayload.hero_subtitle = req.body.hero_subtitle || null;
+      updatePayload.hero_image_id = toNullableId(req.body.hero_image_id);
+    }
+
+    await Page.updatePage(req.params.id, updatePayload);
 
     req.flash('success', 'Page updated successfully.');
     res.redirect(`/admin/pages/${req.params.id}/edit`);

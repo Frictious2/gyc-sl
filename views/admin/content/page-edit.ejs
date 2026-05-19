@@ -4,6 +4,10 @@
   const pageSections = Array.isArray(pageData.sections) ? pageData.sections : [];
   const mediaList = Array.isArray(mediaItems) ? mediaItems : [];
   const editorWarnings = Array.isArray(pageData.editorWarnings) ? pageData.editorWarnings : [];
+  const isHomePage =
+    String(pageData.slug || '').toLowerCase() === 'home' ||
+    String(pageData.route_path || '') === '/' ||
+    String(pageData.page_type || '').toLowerCase() === 'home';
 %>
 
 <% if (editorWarnings.length) { %>
@@ -32,26 +36,34 @@
         <label class="form-label">Page title</label>
         <input class="form-control" name="title" value="<%= pageData.title || '' %>" />
       </div>
-      <div class="col-md-6">
-        <label class="form-label">Hero image</label>
-        <div class="d-flex gap-2">
-          <select class="form-select" id="hero_image_id" name="hero_image_id">
-            <option value="">No image selected</option>
-            <% mediaList.forEach((media) => { %>
-              <option value="<%= media.id %>" <%= String(pageData.hero_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name || `Media #${media.id}` %></option>
-            <% }) %>
-          </select>
-          <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="hero_image_id">Pick</button>
+      <% if (!isHomePage) { %>
+        <div class="col-md-6">
+          <label class="form-label">Hero image</label>
+          <div class="d-flex gap-2">
+            <select class="form-select" id="hero_image_id" name="hero_image_id">
+              <option value="">No image selected</option>
+              <% mediaList.forEach((media) => { %>
+                <option value="<%= media.id %>" <%= String(pageData.hero_image_id || '') === String(media.id) ? 'selected' : '' %>><%= media.title || media.file_name || `Media #${media.id}` %></option>
+              <% }) %>
+            </select>
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#mediaPickerModal" data-media-target="hero_image_id">Pick</button>
+          </div>
         </div>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Hero title</label>
-        <input class="form-control" name="hero_title" value="<%= pageData.hero_title || '' %>" />
-      </div>
-      <div class="col-12">
-        <label class="form-label">Hero subtitle</label>
-        <textarea class="form-control" name="hero_subtitle" rows="3"><%= pageData.hero_subtitle || '' %></textarea>
-      </div>
+        <div class="col-12">
+          <label class="form-label">Hero title</label>
+          <input class="form-control" name="hero_title" value="<%= pageData.hero_title || '' %>" />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Hero subtitle</label>
+          <textarea class="form-control" name="hero_subtitle" rows="3"><%= pageData.hero_subtitle || '' %></textarea>
+        </div>
+      <% } else { %>
+        <div class="col-12">
+          <div class="alert alert-info mb-0">
+            Homepage hero content is managed from the <strong>hero</strong> section below so the public homepage reads from one source only.
+          </div>
+        </div>
+      <% } %>
       <div class="col-md-4">
         <label class="form-label">Status</label>
         <select class="form-select" name="status">
@@ -106,7 +118,15 @@
             </div>
             <div class="col-12">
               <label class="form-label">Body text</label>
-              <textarea class="form-control" name="body" rows="4"><%= section.body || '' %></textarea>
+              <textarea
+                class="form-control"
+                name="body"
+                rows="4"
+                <%= section.section_key === 'impact-statistics' ? 'data-plain-text="true"' : '' %>
+              ><%= section.body || '' %></textarea>
+              <% if (section.section_key === 'impact-statistics') { %>
+                <div class="form-text">This section stores JSON for the homepage counters. Keep it as plain text JSON instead of rich text.</div>
+              <% } %>
             </div>
             <div class="col-md-3">
               <label class="form-label">Primary button label</label>

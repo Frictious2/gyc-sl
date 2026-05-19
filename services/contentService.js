@@ -366,10 +366,10 @@ exports.getHomeContent = async () => {
   const partnersSection = page?.sections?.find((section) => section.section_key === 'partners-supporters');
   const heroContent = {
     eyebrow: heroSection?.subtitle || 'SDG-Inspired Youth Leadership',
-    title: page?.hero_title || heroSection?.title || page?.title || 'Home',
-    summary: page?.hero_subtitle || heroSection?.body || '',
-    image: page?.hero_image_path || heroSection?.image_path || null,
-    imageAlt: page?.hero_image_alt || heroSection?.image_alt || null,
+    title: heroSection?.title || page?.hero_title || page?.title || 'Home',
+    summary: heroSection?.body || page?.hero_subtitle || '',
+    image: heroSection?.image_path || page?.hero_image_path || null,
+    imageAlt: heroSection?.image_alt || page?.hero_image_alt || null,
     primaryButtonLabel: heroSection?.cta_label || 'Join the Movement',
     primaryButtonLink: heroSection?.cta_link || '/get-involved',
     secondaryButtonLabel: heroSection?.secondary_cta_label || 'Learn More',
