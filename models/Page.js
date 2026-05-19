@@ -158,6 +158,20 @@ class Page extends BaseModel {
     );
   }
 
+  static async markPageAsHome(pageId) {
+    const columns = await SchemaInspector.getColumns('pages');
+    if (!columns.has('page_type')) {
+      return;
+    }
+
+    await this.query(
+      `UPDATE pages
+       SET page_type = 'home'
+       WHERE id = :pageId`,
+      { pageId }
+    );
+  }
+
   static async all() {
     const columns = await SchemaInspector.getColumns('pages');
     const whereParts = [];
@@ -338,6 +352,7 @@ class Page extends BaseModel {
       return { affectedRows: 0 };
     }
 
+    const pageBeforeUpdate = await this.getPageIdentity(id);
     const result = await this.query(
       `UPDATE pages
        SET ${updates.join(', ')}
@@ -345,8 +360,8 @@ class Page extends BaseModel {
       params
     );
 
-    const page = await this.getPageIdentity(id);
-    if (isHomePageRecord(page)) {
+    if (isHomePageRecord(pageBeforeUpdate)) {
+      await this.markPageAsHome(id);
       await this.syncHomeHeroSectionFromPage(id, payload);
     }
 
@@ -390,6 +405,13 @@ class Page extends BaseModel {
       params
     );
 
+    const section = await this.getSectionIdentity(id);
+    if (section) {
+      const page = await this.getPageIdentity(section.page_id);
+      if (isHomePageRecord(page)) {
+        await this.markPageAsHome(section.page_id);
+      }
+    }
     await this.syncHomePageFromHeroSection(id, payload);
     return result;
   }

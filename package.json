@@ -8,7 +8,8 @@
     "start": "node server.js",
     "seed": "node scripts/seed.js",
     "db:schema": "node scripts/run-schema.js",
-    "db:migrate:page-editor": "node scripts/migrate-page-editor-schema.js"
+    "db:migrate:page-editor": "node scripts/migrate-page-editor-schema.js",
+    "db:audit:home": "node scripts/audit-homepage-records.js"
   },
   "keywords": [
     "ngo",

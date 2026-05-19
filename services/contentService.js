@@ -1,6 +1,16 @@
 const PublicSite = require('../models/PublicSite');
 const seedData = require('../scripts/seed-data');
 
+function cmsDebug(event, details = {}) {
+  if (String(process.env.DEBUG_CMS || '').toLowerCase() !== 'true') {
+    return;
+  }
+
+  console.log(
+    `[cms-debug] ${event} ${JSON.stringify(details)}`
+  );
+}
+
 function splitSemi(text = '') {
   return text
     .split(';')
@@ -87,11 +97,34 @@ async function getDbPage(routePath) {
 async function getDbHomePage() {
   const page = await PublicSite.getHomePage();
   if (!page) {
+    cmsDebug('home.db.miss', { source: 'db', cacheUsed: false });
     return null;
   }
 
-  const sections = await PublicSite.getSectionsByPageId(page.id);
+  let sections = [];
+  try {
+    sections = await PublicSite.getSectionsByPageId(page.id);
+  } catch (error) {
+    cmsDebug('home.sections.error', {
+      source: 'db',
+      cacheUsed: false,
+      pageId: page.id,
+      slug: page.slug || null,
+      routePath: page.route_path || null,
+      message: error.message
+    });
+    sections = [];
+  }
+
   if (!Array.isArray(sections) || !sections.length) {
+    cmsDebug('home.db.page-only', {
+      source: 'db',
+      cacheUsed: false,
+      pageId: page.id,
+      slug: page.slug || null,
+      routePath: page.route_path || null,
+      sections: 0
+    });
     return {
       ...page,
       sections: []
@@ -99,10 +132,25 @@ async function getDbHomePage() {
   }
 
   const sectionIds = sections.map((section) => section.id).filter(Boolean);
-  const [itemsBySection, mediaBySection] = await Promise.all([
-    PublicSite.getSectionItemsBySectionIds(sectionIds),
-    PublicSite.getSectionMediaBySectionIds(sectionIds)
-  ]);
+  let itemsBySection = {};
+  let mediaBySection = {};
+
+  try {
+    [itemsBySection, mediaBySection] = await Promise.all([
+      PublicSite.getSectionItemsBySectionIds(sectionIds),
+      PublicSite.getSectionMediaBySectionIds(sectionIds)
+    ]);
+  } catch (error) {
+    cmsDebug('home.section-data.error', {
+      source: 'db',
+      cacheUsed: false,
+      pageId: page.id,
+      slug: page.slug || null,
+      routePath: page.route_path || null,
+      sections: sectionIds.length,
+      message: error.message
+    });
+  }
   const enrichedSections = sections.map((section) =>
     parseSection({
       ...section,
@@ -111,10 +159,22 @@ async function getDbHomePage() {
     })
   );
 
-  return {
+  const result = {
     ...page,
     sections: enrichedSections
   };
+
+  cmsDebug('home.db.hit', {
+    source: 'db',
+    cacheUsed: false,
+    pageId: result.id,
+    slug: result.slug || null,
+    routePath: result.route_path || null,
+    sections: enrichedSections.length,
+    sectionItems: enrichedSections.reduce((sum, section) => sum + (Array.isArray(section.items) ? section.items.length : 0), 0)
+  });
+
+  return result;
 }
 
 async function withFallback(dbWork, fallback) {
@@ -241,22 +301,35 @@ exports.getSeo = (routePath) =>
 exports.getHomePage = async () => {
   try {
     const dbPage = await getDbHomePage();
-    if (dbPage && Array.isArray(dbPage.sections) && dbPage.sections.length) {
+    if (dbPage) {
+      cmsDebug('home.resolve', {
+        source: 'db',
+        cacheUsed: false,
+        pageId: dbPage.id,
+        slug: dbPage.slug || null,
+        routePath: dbPage.route_path || null,
+        sections: Array.isArray(dbPage.sections) ? dbPage.sections.length : 0
+      });
       return dbPage;
     }
-
-    if (dbPage) {
-      const fallbackHome = normalizeSeedPage('/') || {};
-      return {
-        ...dbPage,
-        sections: Array.isArray(dbPage.sections) && dbPage.sections.length ? dbPage.sections : fallbackHome.sections || []
-      };
-    }
   } catch (error) {
-    // Fall through to seed fallback below.
+    cmsDebug('home.resolve.error', {
+      source: 'db',
+      cacheUsed: false,
+      message: error.message
+    });
   }
 
-  return normalizeSeedPage('/');
+  const fallback = normalizeSeedPage('/');
+  cmsDebug('home.resolve', {
+    source: 'fallback',
+    cacheUsed: false,
+    pageId: fallback?.id || null,
+    slug: fallback?.slug || 'home',
+    routePath: fallback?.route_path || '/',
+    sections: Array.isArray(fallback?.sections) ? fallback.sections.length : 0
+  });
+  return fallback;
 };
 
 exports.getHomeContent = async () => {
