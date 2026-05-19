@@ -29,14 +29,7 @@ exports.home = async (req, res, next) => {
     ]);
 
     if (String(process.env.NODE_ENV || '').toLowerCase() === 'production' && !homeContent?.page) {
-      console.error('[publicController.home] Production homepage DB record could not be resolved.');
-      return res.status(500).render('pages/500', {
-        title: 'Homepage Unavailable',
-        pageMeta: {
-          title: 'Homepage Unavailable',
-          description: 'The homepage content could not be loaded from the database.'
-        }
-      });
+      console.error('[publicController.home] Production homepage DB record could not be resolved. Rendering empty DB-only homepage state.');
     }
 
     render(res, 'pages/index', {

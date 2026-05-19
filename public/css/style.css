@@ -432,12 +432,65 @@ a {
   max-width: 56rem;
 }
 
+.home-impact-band {
+  background:
+    linear-gradient(180deg, rgba(10, 151, 217, 0.04), rgba(255, 255, 255, 0)),
+    #fff;
+}
+
+.home-story-section,
+.home-featured-section {
+  background: var(--surface-soft);
+}
+
+.home-section-heading {
+  max-width: 52rem;
+}
+
+.home-story-panel {
+  padding: 1rem;
+}
+
+.home-story-image,
+.home-story-placeholder {
+  width: 100%;
+  min-height: 360px;
+  max-height: 360px;
+  object-fit: cover;
+}
+
+.home-featured-column .sdg-card,
+.home-featured-column .partner-card {
+  height: 100%;
+}
+
+.home-supporters-panel {
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at top right, rgba(86, 192, 43, 0.1), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(229, 36, 59, 0.08), transparent 24%),
+    #fff;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
 .home-supporters-section {
   padding-top: 5rem !important;
   margin-top: 1rem;
 }
 
 @media (max-width: 991.98px) {
+  .home-story-image,
+  .home-story-placeholder {
+    min-height: 280px;
+    max-height: 280px;
+  }
+
+  .home-supporters-panel {
+    padding: 1.5rem;
+  }
+
   .home-supporters-section {
     padding-top: 3.5rem !important;
     margin-top: 0.5rem;

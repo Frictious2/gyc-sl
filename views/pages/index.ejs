@@ -1,122 +1,192 @@
+<%
+  const hero = homeContent?.heroContent || {};
+  const stats = Array.isArray(homeContent?.stats) ? homeContent.stats : [];
+  const programs = Array.isArray(homeContent?.programs) ? homeContent.programs : [];
+  const partners = Array.isArray(homeContent?.partners) ? homeContent.partners : [];
+  const aboutSection = homeContent?.aboutSection || {};
+  const programsSection = homeContent?.programsSection || {};
+  const featuredSection = homeContent?.featuredSection || {};
+  const partnersSection = homeContent?.partnersSection || {};
+  const finalCta = homeContent?.finalCta || {};
+  const featuredProject = homeContent?.featuredProject || null;
+  const featuredNews = homeContent?.featuredNews || null;
+  const aboutImage = aboutSection.image_path || (Array.isArray(aboutSection.media) && aboutSection.media[0] && aboutSection.media[0].file_path) || '';
+  const aboutImageAlt = aboutSection.image_alt || aboutSection.title || 'About GYC Sierra Leone';
+%>
+
 <%- include('../partials/page-hero', {
-  eyebrow: homeContent.heroContent?.eyebrow || 'SDG-Inspired Youth Leadership',
-  title: homeContent.heroContent?.title,
-  summary: homeContent.heroContent?.summary,
-  image: homeContent.heroContent?.image,
-  imageAlt: homeContent.heroContent?.imageAlt,
+  eyebrow: hero.eyebrow || 'SDG-Inspired Youth Leadership',
+  title: hero.title || 'Building an Emerging Society of Young Leaders for Sustainable Development',
+  summary: hero.summary || '',
+  image: hero.image || '',
+  imageAlt: hero.imageAlt || hero.title || 'GYC Sierra Leone',
   buttons: [
-    { label: homeContent.heroContent?.primaryButtonLabel || 'Join the Movement', href: homeContent.heroContent?.primaryButtonLink || '/get-involved' },
-    { label: homeContent.heroContent?.secondaryButtonLabel || 'Learn More', href: homeContent.heroContent?.secondaryButtonLink || '/about' },
+    { label: hero.primaryButtonLabel || 'Join the Movement', href: hero.primaryButtonLink || '/get-involved' },
+    { label: hero.secondaryButtonLabel || 'Learn More', href: hero.secondaryButtonLink || '/about' },
     { label: 'Donate Now', href: '/donate' }
   ]
 }) %>
 
-<section class="py-5">
+<section class="home-impact-band py-5">
   <div class="container">
-    <div class="section-heading mb-4">
+    <div class="section-heading home-section-heading mb-4">
       <span class="eyebrow">Impact</span>
-      <h2 class="display-6 fw-bold mt-3"><%= homeContent.statsSection?.title || 'Youth-driven results across Sierra Leone' %></h2>
-      <% if (homeContent.statsSection?.subtitle) { %>
+      <h2 class="display-6 fw-bold mt-3"><%= homeContent?.statsSection?.title || 'Youth-driven results across Sierra Leone' %></h2>
+      <% if (homeContent?.statsSection?.subtitle) { %>
         <div class="section-subtitle mt-3 mb-0"><%- homeContent.statsSection.subtitle %></div>
       <% } %>
     </div>
     <div class="row g-4">
-      <% homeContent.stats.forEach((stat) => { %>
-        <div class="col-sm-6 col-xl">
-          <%- include('../partials/stat-counter', { stat }) %>
+      <% if (stats.length) { %>
+        <% stats.forEach((stat) => { %>
+          <div class="col-sm-6 col-xl">
+            <%- include('../partials/stat-counter', { stat }) %>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12">
+          <div class="stat-card">
+            <div class="stat-label">Impact statistics will appear here once added in the CMS.</div>
+          </div>
         </div>
-      <% }) %>
+      <% } %>
     </div>
   </div>
 </section>
 
-<section class="py-5 bg-soft">
+<section class="home-story-section py-5">
   <div class="container">
     <div class="row g-5 align-items-center">
       <div class="col-lg-5">
-        <span class="eyebrow"><%= homeContent.aboutSection?.subtitle || 'Who We Are' %></span>
-        <h2 class="display-6 fw-bold mt-3"><%= homeContent.aboutSection?.title || 'A youth-led movement for sustainable development' %></h2>
-        <div class="lead"><%- homeContent.aboutSection?.body || '' %></div>
-        <a href="<%= homeContent.aboutSection?.cta_link || '/about' %>" class="btn btn-sdg"><%= homeContent.aboutSection?.cta_label || 'Discover Our Story' %></a>
+        <span class="eyebrow"><%= aboutSection.subtitle || 'Who We Are' %></span>
+        <h2 class="display-6 fw-bold mt-3"><%= aboutSection.title || 'A youth-led movement for sustainable development' %></h2>
+        <div class="lead"><%- aboutSection.body || '' %></div>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="<%= aboutSection.cta_link || '/about' %>" class="btn btn-sdg"><%= aboutSection.cta_label || 'Discover Our Story' %></a>
+        </div>
       </div>
       <div class="col-lg-7">
-        <div class="story-panel">
-          <div class="placeholder-image rounded-4">About preview visual</div>
+        <div class="story-panel home-story-panel">
+          <% if (aboutImage) { %>
+            <img src="<%= aboutImage %>" alt="<%= aboutImageAlt %>" class="img-fluid rounded-4 home-story-image" />
+          <% } else { %>
+            <div class="placeholder-image rounded-4 home-story-placeholder">About preview visual</div>
+          <% } %>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="py-5">
+<section class="home-programs-section py-5">
   <div class="container">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
-      <div>
-        <span class="eyebrow"><%= homeContent.programsSection?.subtitle || 'What We Do' %></span>
-        <h2 class="display-6 fw-bold mt-3"><%= homeContent.programsSection?.title || 'Five thematic pillars for lasting impact' %></h2>
-        <% if (homeContent.programsSection?.body) { %>
-          <div class="section-subtitle mt-3 mb-0"><%- homeContent.programsSection.body %></div>
+      <div class="section-heading mb-0">
+        <span class="eyebrow"><%= programsSection.subtitle || 'What We Do' %></span>
+        <h2 class="display-6 fw-bold mt-3"><%= programsSection.title || 'Five thematic pillars for lasting impact' %></h2>
+        <% if (programsSection.body) { %>
+          <div class="section-subtitle mt-3 mb-0"><%- programsSection.body %></div>
         <% } %>
       </div>
-      <a href="<%= homeContent.programsSection?.cta_link || '/programs' %>" class="btn btn-outline-sdg"><%= homeContent.programsSection?.cta_label || 'Explore Our Programs' %></a>
+      <a href="<%= programsSection.cta_link || '/programs' %>" class="btn btn-outline-sdg"><%= programsSection.cta_label || 'Explore Our Programs' %></a>
     </div>
     <div class="row g-4">
-      <% homeContent.programs.forEach((program) => { %>
-        <div class="col-md-6 col-xl-4">
-          <%- include('../partials/program-card', { program, accentClass: (program.slug || '').replace(/[^a-z]/g, '') }) %>
+      <% if (programs.length) { %>
+        <% programs.forEach((program) => { %>
+          <div class="col-md-6 col-xl-4">
+            <%- include('../partials/program-card', { program, accentClass: (program.slug || '').replace(/[^a-z]/g, '') }) %>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12">
+          <div class="sdg-card">
+            <p class="mb-0">Programs added in the CMS will appear here.</p>
+          </div>
         </div>
-      <% }) %>
+      <% } %>
     </div>
   </div>
 </section>
 
-<section class="py-5 bg-soft">
+<section class="home-featured-section py-5">
   <div class="container">
-    <div class="row g-4">
+    <div class="section-heading home-section-heading mb-4">
+      <span class="eyebrow"><%= featuredSection.subtitle || 'Featured Stories' %></span>
+      <h2 class="display-6 fw-bold mt-3"><%= featuredSection.title || 'From ideas to community impact' %></h2>
+      <% if (featuredSection.body) { %>
+        <div class="section-subtitle mt-3 mb-0"><%- featuredSection.body %></div>
+      <% } %>
+    </div>
+    <div class="row g-4 align-items-stretch">
       <div class="col-lg-6">
-        <span class="eyebrow"><%= homeContent.featuredSection?.subtitle || 'Featured Project' %></span>
-        <h2 class="display-6 fw-bold mt-3"><%= homeContent.featuredSection?.title || 'From ideas to community impact' %></h2>
-        <% if (homeContent.featuredSection?.body) { %>
-          <div class="section-subtitle mt-3"><%- homeContent.featuredSection.body %></div>
-        <% } %>
-        <% if (homeContent.featuredProject) { %>
-          <%- include('../partials/project-card', { project: homeContent.featuredProject }) %>
-        <% } %>
+        <div class="home-featured-column h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+            <div>
+              <span class="eyebrow">Featured Project</span>
+              <h3 class="h4 fw-bold mt-3 mb-0">Current community impact</h3>
+            </div>
+          </div>
+          <% if (featuredProject) { %>
+            <%- include('../partials/project-card', { project: featuredProject }) %>
+          <% } else { %>
+            <div class="sdg-card h-100">
+              <p class="mb-0">Featured project content will appear here once added in the CMS.</p>
+            </div>
+          <% } %>
+        </div>
       </div>
       <div class="col-lg-6">
-        <span class="eyebrow">Latest Update</span>
-        <h2 class="display-6 fw-bold mt-3">Stories and events shaping the movement</h2>
-        <% if (homeContent.featuredNews) { %>
-          <%- include('../partials/news-card', { post: homeContent.featuredNews }) %>
-        <% } %>
+        <div class="home-featured-column h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+            <div>
+              <span class="eyebrow">Latest Update</span>
+              <h3 class="h4 fw-bold mt-3 mb-0">Stories shaping the movement</h3>
+            </div>
+          </div>
+          <% if (featuredNews) { %>
+            <%- include('../partials/news-card', { post: featuredNews }) %>
+          <% } else { %>
+            <div class="sdg-card h-100">
+              <p class="mb-0">Latest news content will appear here once added in the CMS.</p>
+            </div>
+          <% } %>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="py-5 home-supporters-section">
+<section class="home-supporters-section py-5">
   <div class="container">
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
-      <div>
-        <span class="eyebrow"><%= homeContent.partnersSection?.subtitle || 'Partners & Supporters' %></span>
-        <h2 class="display-6 fw-bold mt-3"><%= homeContent.partnersSection?.title || 'Collaboration that scales youth impact' %></h2>
-        <% if (homeContent.partnersSection?.body) { %>
-          <div class="section-subtitle mt-3 mb-0"><%- homeContent.partnersSection.body %></div>
-        <% } %>
+    <div class="home-supporters-panel">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+        <div class="section-heading mb-0">
+          <span class="eyebrow"><%= partnersSection.subtitle || 'Partners & Supporters' %></span>
+          <h2 class="display-6 fw-bold mt-3"><%= partnersSection.title || 'Collaboration that scales youth impact' %></h2>
+          <% if (partnersSection.body) { %>
+            <div class="section-subtitle mt-3 mb-0"><%- partnersSection.body %></div>
+          <% } %>
+        </div>
+        <a href="<%= partnersSection.cta_link || '/about/partners' %>" class="btn btn-outline-sdg"><%= partnersSection.cta_label || 'View Partners' %></a>
       </div>
-      <a href="<%= homeContent.partnersSection?.cta_link || '/about/partners' %>" class="btn btn-outline-sdg"><%= homeContent.partnersSection?.cta_label || 'View Partners' %></a>
+      <% if (partners.length) { %>
+        <%- include('../partials/partner-strip', { partners }) %>
+      <% } else { %>
+        <div class="partner-card">
+          <p class="mb-0">Partner and supporter logos will appear here once added in the CMS.</p>
+        </div>
+      <% } %>
     </div>
-    <%- include('../partials/partner-strip', { partners: homeContent.partners }) %>
   </div>
 </section>
 
 <%- include('../partials/cta-banner', {
   cta: {
-    title: homeContent.finalCta?.title || 'Ready to Make a Difference?',
-    body: homeContent.finalCta?.body || 'Join thousands of young Sierra Leoneans who are taking action for a sustainable future.',
+    title: finalCta.title || 'Ready to Make a Difference?',
+    body: finalCta.body || 'Join thousands of young Sierra Leoneans who are taking action for a sustainable future.',
     buttons: [
-      { label: homeContent.finalCta?.cta_label || 'Volunteer', href: homeContent.finalCta?.cta_link || '/get-involved/volunteer' },
-      { label: homeContent.finalCta?.secondary_cta_label || 'Partner', href: homeContent.finalCta?.secondary_cta_link || '/get-involved/partner' },
+      { label: finalCta.cta_label || 'Volunteer', href: finalCta.cta_link || '/get-involved/volunteer' },
+      { label: finalCta.secondary_cta_label || 'Partner', href: finalCta.secondary_cta_link || '/get-involved/partner' },
       { label: 'Donate', href: '/donate' }
     ]
   }

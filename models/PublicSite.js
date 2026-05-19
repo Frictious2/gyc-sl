@@ -31,10 +31,14 @@ class PublicSite extends BaseModel {
         pageColumns.has('hero_image_id') ? 'p.hero_image_id' : 'NULL AS hero_image_id',
         pageColumns.has('status') ? 'p.status' : "'published' AS status",
         pageColumns.has('is_published') ? 'p.is_published' : '1 AS is_published',
+        pageColumns.has('updated_at') ? 'p.updated_at' : 'NULL AS updated_at',
+        'COUNT(DISTINCT ps.id) AS section_count',
         mediaColumns.has('file_path') ? 'hero_media.file_path AS hero_image_path' : 'NULL AS hero_image_path',
         mediaColumns.has('alt_text') ? 'hero_media.alt_text AS hero_image_alt' : 'NULL AS hero_image_alt'
       ].join(', ')}
        FROM pages p
+       LEFT JOIN page_sections ps ON ps.page_id = p.id
+         ${pageColumns.has('deleted_at') ? 'AND ps.deleted_at IS NULL' : ''}
        LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id ${mediaColumns.has('deleted_at') ? 'AND hero_media.deleted_at IS NULL' : ''}
        WHERE (
          ${pageColumns.has('slug') ? "p.slug = 'home' OR" : ''}
@@ -48,6 +52,7 @@ class PublicSite extends BaseModel {
          ${pageColumns.has('deleted_at') ? 'AND p.deleted_at IS NULL' : ''}
          ${pageColumns.has('is_published') ? 'AND p.is_published = 1' : ''}
          ${pageColumns.has('status') ? "AND p.status = 'published'" : ''}
+       GROUP BY p.id
        ORDER BY
          CASE
            ${pageColumns.has('slug') ? "WHEN p.slug = 'home' THEN 0" : ''}
@@ -59,6 +64,8 @@ class PublicSite extends BaseModel {
            WHEN p.route_path = 'index' THEN 6
            ELSE 99
          END,
+         section_count DESC,
+         ${pageColumns.has('updated_at') ? 'p.updated_at DESC,' : ''}
          p.id ASC
        LIMIT 1`
     );
@@ -97,6 +104,8 @@ class PublicSite extends BaseModel {
             ${pageColumns.has('page_type') ? "WHEN p.page_type = 'home' THEN 7" : ''}
             ELSE 99
           END,
+          section_count DESC,
+          ${pageColumns.has('updated_at') ? 'p.updated_at DESC,' : ''}
           p.id ASC`
       : 'ORDER BY p.id ASC';
 
@@ -112,15 +121,20 @@ class PublicSite extends BaseModel {
         pageColumns.has('hero_image_id') ? 'p.hero_image_id' : 'NULL AS hero_image_id',
         pageColumns.has('status') ? 'p.status' : "'published' AS status",
         pageColumns.has('is_published') ? 'p.is_published' : '1 AS is_published',
+        pageColumns.has('updated_at') ? 'p.updated_at' : 'NULL AS updated_at',
+        'COUNT(DISTINCT ps.id) AS section_count',
         mediaColumns.has('file_path') ? 'hero_media.file_path AS hero_image_path' : 'NULL AS hero_image_path',
         mediaColumns.has('alt_text') ? 'hero_media.alt_text AS hero_image_alt' : 'NULL AS hero_image_alt'
       ].join(', ')}
        FROM pages p
+       LEFT JOIN page_sections ps ON ps.page_id = p.id
+         ${pageColumns.has('deleted_at') ? 'AND ps.deleted_at IS NULL' : ''}
        LEFT JOIN media_library hero_media ON hero_media.id = p.hero_image_id ${mediaColumns.has('deleted_at') ? 'AND hero_media.deleted_at IS NULL' : ''}
        WHERE (${routePathConditions.join(' OR ')})
          ${pageColumns.has('deleted_at') ? 'AND p.deleted_at IS NULL' : ''}
          ${pageColumns.has('is_published') ? 'AND p.is_published = 1' : ''}
          ${pageColumns.has('status') ? "AND p.status = 'published'" : ''}
+       GROUP BY p.id
        ${orderBy}
        LIMIT 1`,
       { routePath }
